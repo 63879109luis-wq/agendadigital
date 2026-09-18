@@ -1,0 +1,176 @@
+# ============================================================
+#  .gitignore — Proyecto Multi-Stack
+#  Node.js | Flutter | Python | HTML/CSS/JS | VS Code | Windows
+# ============================================================
+
+
+# ─────────────────────────────────────────
+#  SEGURIDAD — Nunca subir estas a GitHub
+# ─────────────────────────────────────────
+**/.env
+**/.env.*
+!**/.env.example
+**/firebase-service-account.json
+**/google-services.json
+**/GoogleService-Info.plist
+**/*.keystore
+**/*.jks
+**/*.p12
+**/*.pem
+**/*.key
+**/*.pfx
+
+
+# ─────────────────────────────────────────
+#  NODE.JS / BACKEND
+# ─────────────────────────────────────────
+**/node_modules/
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/.npm
+**/package-lock.json
+
+# Carpeta de uploads generados en tiempo de ejecución
+backend/uploads/
+
+
+# ─────────────────────────────────────────
+#  PYTHON / OCR-SERVICE
+# ─────────────────────────────────────────
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+**/venv/
+**/.venv/
+
+# Caché de Python
+**/__pycache__/
+**/*.py[cod]
+**/*.pyo
+**/*.pyd
+**/.Python
+
+# Distribución / empaquetado
+**/dist/
+**/build/
+**/*.egg-info/
+**/*.egg
+**/wheels/
+**/.eggs/
+
+# Logs de Python
+ocr-service/error.log
+
+# mypy, coverage, etc.
+**/.mypy_cache/
+**/.pytest_cache/
+**/.coverage
+**/htmlcov/
+
+
+# ─────────────────────────────────────────
+#  FLUTTER / DART (mobile_app)
+# ─────────────────────────────────────────
+# Directorio de build
+mobile_app/build/
+mobile_app/.dart_tool/
+
+# Archivos generados por Flutter
+mobile_app/.flutter-plugins
+mobile_app/.flutter-plugins-dependencies
+mobile_app/.packages
+
+# Android generados
+mobile_app/android/.gradle/
+mobile_app/android/local.properties
+mobile_app/android/captures/
+mobile_app/android/generatedDebugSources/
+mobile_app/android/app/debug/
+mobile_app/android/app/profile/
+mobile_app/android/app/release/
+mobile_app/android/key.properties
+
+# iOS generados
+mobile_app/ios/.symlinks/
+mobile_app/ios/Flutter/flutter_export_environment.sh
+mobile_app/ios/Flutter/App.framework/
+mobile_app/ios/Flutter/Flutter.framework/
+mobile_app/ios/Pods/
+mobile_app/ios/Podfile.lock
+
+# Archivos de IDE de Flutter
+mobile_app/.idea/
+mobile_app/*.iml
+mobile_app/local.properties
+
+# Logs de build de Flutter (generados durante el desarrollo)
+mobile_app/*.log
+mobile_app/*.txt
+mobile_app/build_error.log
+mobile_app/build_errors_verbose.txt
+mobile_app/build_log.txt
+mobile_app/build_output.txt
+mobile_app/build_verbose.log
+mobile_app/gradle_error.txt
+mobile_app/gradle_error_new.log
+mobile_app/gradle_verbose.log
+mobile_app/gradle_failure.txt
+mobile_app/all_emulators.txt
+mobile_app/devices_list.txt
+mobile_app/doctor.txt
+mobile_app/doctor_full.txt
+mobile_app/emulators*.txt
+mobile_app/emus*.txt
+mobile_app/flutter_run.log
+mobile_app/flutter_*.log
+
+
+# ─────────────────────────────────────────
+#  VS CODE
+# ─────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+.VSCodeCounter/
+
+
+# ─────────────────────────────────────────
+#  SISTEMA OPERATIVO — Windows / macOS / Linux
+# ─────────────────────────────────────────
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+
+
+# ─────────────────────────────────────────
+#  SCRIPTS DE UTILIDAD (opcionales)
+#  Descomenta si no quieres subirlos
+# ─────────────────────────────────────────
+# abrir_panel_admin.ps1
+# iniciar_panel_admin.ps1
+# start_app.ps1
+# flutter_launcher_temp.ps1
+
+
+# ─────────────────────────────────────────
+#  DIRECTORIOS DESACTIVADOS / TEMPORALES
+# ─────────────────────────────────────────
+_test_app_disabled/

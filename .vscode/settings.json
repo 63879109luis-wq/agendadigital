@@ -1,0 +1,16 @@
+{
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.project.referencedLibraries": [],
+    "java.import.exclusions": [
+        "**/android/**",
+        "**/mobile_app/android/**",
+        "**/*.iml",
+        "**/build/**",
+        "**/.gradle/**"
+    ],
+    "files.exclude": {
+        "**/mobile_app/android/mobile_app_android.iml": true
+    },
+    "java.problems.enabled": false,
+    "xml.validation.enabled": false
+}

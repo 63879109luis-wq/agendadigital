@@ -1,0 +1,2223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Académico — Panel Administrativo | Colegio Germán Busch "A"</title>
+    <meta name="description" content="Panel de administración del Sistema Académico del Colegio Germán Busch A. Gestión de docentes, estudiantes, materias, actividades y calificaciones.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     PANTALLA LOGIN (PANEL ADMINISTRATIVO)
+════════════════════════════════════════════════════ -->
+<div class="login-screen-overlay" id="loginScreenOverlay">
+    <canvas id="indexLoginCanvas" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none;"></canvas>
+    <div class="login-card">
+        
+        <!-- Top brand emblem -->
+        <div class="login-brand-header">
+            <div class="login-brand-logo">
+                <div class="stripe-yellow"></div>
+                <div class="stripe-blue"></div>
+            </div>
+        </div>
+
+        <!-- Title group -->
+        <div class="login-title-group">
+            <h1>Iniciar sesión</h1>
+            <p>Accede con tu cuenta para continuar</p>
+        </div>
+
+        <!-- Form -->
+        <form onsubmit="handleLoginSubmit(event)">
+            <!-- Correo electrónico -->
+            <div class="login-form-group">
+                <label class="login-form-label" for="panelLoginEmail">Correo electrónico</label>
+                <div class="login-input-wrapper">
+                    <span class="login-field-icon-left">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                    </span>
+                    <input type="email" id="panelLoginEmail" placeholder="admin@sistema.edu" value="admin@sistema.edu" required>
+                </div>
+            </div>
+
+            <!-- Contraseña -->
+            <div class="login-form-group">
+                <label class="login-form-label" for="panelLoginPassword">Contraseña</label>
+                <div class="login-input-wrapper">
+                    <span class="login-field-icon-left">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                    </span>
+                    <input type="password" id="panelLoginPassword" placeholder="••••••••" value="admin123" required>
+                    <button type="button" class="login-field-icon-right" onclick="toggleLoginPasswordVis('panelLoginPassword', this)" title="Mostrar / ocultar contraseña">
+                        <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Checkbox & Forgot link -->
+            <div class="login-options-row">
+                <label class="login-checkbox-label">
+                    <input type="checkbox" id="panelRememberMe" checked>
+                    <span>Recordarme</span>
+                </label>
+                <a href="#" class="login-forgot-link" onclick="showToast('Contacta al administrador para recuperar tu contraseña.'); return false;">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <!-- Iniciar sesión Button -->
+            <button type="submit" class="login-btn-primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                    <polyline points="10 17 15 12 10 7"/>
+                    <line x1="15" y1="12" x2="3" y2="12"/>
+                </svg>
+                <span>Iniciar sesión</span>
+            </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="login-divider-row">
+            <div class="login-divider-line"></div>
+            <div class="login-divider-dot"></div>
+        </div>
+
+        <!-- Iniciar sesión como administrador Button -->
+        <button type="button" class="login-btn-admin" onclick="handleLoginSubmit(event)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span>Iniciar sesión como administrador</span>
+        </button>
+
+    </div>
+</div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
+                <path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
+            </svg>
+        </div>
+        <div class="logo-text">
+            <span class="logo-top">SISTEMA</span>
+            <span class="logo-bottom">ACADÉMICO</span>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="#dashboard" class="nav-item active" id="nav-dashboard" onclick="navigate('dashboard', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+            </svg>
+            <span>Dashboard</span>
+        </a>
+        <a href="#administradores" class="nav-item" id="nav-administradores" onclick="navigate('administradores', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+            <span>Administradores</span>
+        </a>
+        <a href="#docentes" class="nav-item" id="nav-docentes" onclick="navigate('docentes', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+            </svg>
+            <span>Docentes</span>
+        </a>
+        <a href="#estudiantes" class="nav-item" id="nav-estudiantes" onclick="navigate('estudiantes', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 11-6-11-6z"/>
+            </svg>
+            <span>Estudiantes</span>
+        </a>
+        <a href="#materias" class="nav-item" id="nav-materias" onclick="navigate('materias', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 14H8v-2h8v2zm0-4H8v-2h8v2zm0-4H8V6h8v2z"/>
+            </svg>
+            <span>Materias</span>
+        </a>
+        <a href="#actividades" class="nav-item" id="nav-actividades" onclick="navigate('actividades', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+            </svg>
+            <span>Actividades</span>
+        </a>
+        <a href="#agenda" class="nav-item" id="nav-agenda" onclick="navigate('agenda', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/>
+            </svg>
+            <span>Agenda</span>
+        </a>
+        <a href="#calificaciones" class="nav-item" id="nav-calificaciones" onclick="navigate('calificaciones', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/>
+            </svg>
+            <span>Calificaciones</span>
+        </a>
+        <a href="#reportes" class="nav-item" id="nav-reportes" onclick="navigate('reportes', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+            </svg>
+            <span>Reportes</span>
+        </a>
+        <a href="#inscripcion" class="nav-item" id="nav-inscripcion" onclick="navigate('inscripcion', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-1 5h-2v-2h2v2zm2-4H8v-2h6v2z"/>
+            </svg>
+            <span>Inscripción</span>
+            <span class="nav-badge-new">NUEVO</span>
+        </a>
+        <a href="#configuracion" class="nav-item" id="nav-configuracion" onclick="navigate('configuracion', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+            </svg>
+            <span>Configuración</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="security-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+            </svg>
+            <div>
+                <div class="security-title">Seguro y confiable</div>
+                <div class="security-sub">Protección de datos y accesos.</div>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════════════════════ -->
+<div class="main-wrapper">
+
+    <!-- TOP NAVBAR -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                </svg>
+            </button>
+            <h1 class="topbar-title">Sistema Académico — <span class="title-highlight">Panel Administrativo</span></h1>
+        </div>
+        <div class="topbar-center">
+            <div class="search-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="search-icon">
+                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Buscar estudiantes, docentes, materias..." class="search-input">
+                <button class="search-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <div class="notif-btn" onclick="toggleNotifications()" id="notifBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                </svg>
+                <span class="notif-badge" id="notifBadge">3</span>
+            </div>
+            <div class="user-profile" onclick="toggleUserMenu()" id="userProfile">
+                <div class="user-avatar">A</div>
+                <div class="user-info">
+                    <span class="user-name">Administrador</span>
+                    <span class="user-email">admin@sistema.edu</span>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="chevron-icon" id="chevronIcon">
+                    <path d="M7 10l5 5 5-5z"/>
+                </svg>
+            </div>
+            <!-- User dropdown -->
+            <div class="user-dropdown" id="userDropdown">
+                <a href="#" class="dropdown-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    Mi Perfil
+                </a>
+                <a href="#" class="dropdown-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                    Configuración
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item text-danger" onclick="logout(); return false;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                    Cerrar Sesión
+                </a>
+            </div>
+            <!-- Notification panel -->
+            <div class="notif-panel" id="notifPanel">
+                <div class="notif-header">
+                    <span>Notificaciones</span>
+                    <button class="notif-clear" onclick="clearNotifications()">Limpiar</button>
+                </div>
+                <div class="notif-list" id="notifList">
+                    <div class="notif-item unread">
+                        <div class="notif-dot"></div>
+                        <div class="notif-content">
+                            <p class="notif-text">3 nuevos estudiantes matriculados hoy</p>
+                            <span class="notif-time">Hace 5 min</span>
+                        </div>
+                    </div>
+                    <div class="notif-item unread">
+                        <div class="notif-dot"></div>
+                        <div class="notif-content">
+                            <p class="notif-text">Docente Juan Pérez actualizó calificaciones</p>
+                            <span class="notif-time">Hace 20 min</span>
+                        </div>
+                    </div>
+                    <div class="notif-item unread">
+                        <div class="notif-dot"></div>
+                        <div class="notif-content">
+                            <p class="notif-text">Reunión de Padres programada para el 22 Mayo</p>
+                            <span class="notif-time">Hace 1 hora</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <main class="content" id="mainContent">
+
+        <!-- ════ DASHBOARD PAGE ════ -->
+        <section class="page active" id="page-dashboard">
+
+            <!-- STAT CARDS -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 14H8v-2h8v2zm0-4H8v-2h8v2zm0-4H8V6h8v2z"/></svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Materias activas</span>
+                        <span class="stat-value" id="stat-materias">12</span>
+                        <span class="stat-change positive">+2 este mes</span>
+                    </div>
+                    <svg class="stat-wave" viewBox="0 0 100 40" preserveAspectRatio="none">
+                        <polyline points="0,35 15,28 30,32 45,20 60,25 75,15 90,18 100,10" fill="none" stroke="rgba(59,130,246,0.5)" stroke-width="2"/>
+                    </svg>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Docentes registrados</span>
+                        <span class="stat-value" id="stat-docentes">28</span>
+                        <span class="stat-change positive">+3 este mes</span>
+                    </div>
+                    <svg class="stat-wave" viewBox="0 0 100 40" preserveAspectRatio="none">
+                        <polyline points="0,30 15,25 30,28 45,18 60,22 75,12 90,16 100,8" fill="none" stroke="rgba(16,185,129,0.5)" stroke-width="2"/>
+                    </svg>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon yellow">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 11-6-11-6z"/></svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Estudiantes matriculados</span>
+                        <span class="stat-value" id="stat-estudiantes">342</span>
+                        <span class="stat-change positive">+18 este mes</span>
+                    </div>
+                    <svg class="stat-wave" viewBox="0 0 100 40" preserveAspectRatio="none">
+                        <polyline points="0,38 15,32 30,35 45,22 60,28 75,16 90,20 100,12" fill="none" stroke="rgba(245,158,11,0.5)" stroke-width="2"/>
+                    </svg>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Actividades programadas</span>
+                        <span class="stat-value" id="stat-actividades">56</span>
+                        <span class="stat-change positive">+7 esta semana</span>
+                    </div>
+                    <svg class="stat-wave" viewBox="0 0 100 40" preserveAspectRatio="none">
+                        <polyline points="0,32 15,26 30,30 45,18 60,24 75,14 90,17 100,9" fill="none" stroke="rgba(139,92,246,0.5)" stroke-width="2"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- FLUJO + ROLES -->
+            <div class="mid-grid">
+                <!-- FLUJO DEL SISTEMA -->
+                <div class="card flow-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            Flujo del sistema
+                        </div>
+                    </div>
+                    <div class="flow-steps">
+                        <div class="flow-step">
+                            <div class="step-circle">1</div>
+                            <div class="step-icon-box">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="#3b82f6"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                            </div>
+                            <p class="step-title">Registro y configuración</p>
+                            <p class="step-desc">El administrador registra docentes, estudiantes y materias.</p>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="step-circle">2</div>
+                            <div class="step-icon-box">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="#3b82f6"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                            </div>
+                            <p class="step-title">Asignación</p>
+                            <p class="step-desc">El administrador asigna docentes a sus materias.</p>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="step-circle">3</div>
+                            <div class="step-icon-box">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="#3b82f6"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                            </div>
+                            <p class="step-title">Matriculación</p>
+                            <p class="step-desc">Se inscriben los estudiantes en cada curso.</p>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="step-circle">4</div>
+                            <div class="step-icon-box">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="#3b82f6"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                            </div>
+                            <p class="step-title">Ingreso del docente</p>
+                            <p class="step-desc">El docente entra y visualiza sus materias asignadas.</p>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="step-circle">5</div>
+                            <div class="step-icon-box">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="#3b82f6"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                            </div>
+                            <p class="step-title">Creación de actividades</p>
+                            <p class="step-desc">El docente planifica actividades, tareas y fechas de entrega.</p>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="step-circle">6</div>
+                            <div class="step-icon-box">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="#3b82f6"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+                            </div>
+                            <p class="step-title">Sincronización con agenda</p>
+                            <p class="step-desc">Las actividades se reflejan en la agenda web y en el celular.</p>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="step-circle">7</div>
+                            <div class="step-icon-box">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="#3b82f6"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                            </div>
+                            <p class="step-title">Recepción de tareas</p>
+                            <p class="step-desc">Dentro de la actividad se ve quién entregó y quién no entregó.</p>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="step-circle star">⭐</div>
+                            <div class="step-icon-box gold">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="#f59e0b"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+                            </div>
+                            <p class="step-title">Calificación y consulta</p>
+                            <p class="step-desc">El docente califica, el estudiante revisa notas y observaciones.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROLES DEL SISTEMA -->
+                <div class="card roles-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="#3b82f6"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3z"/></svg>
+                            Roles del sistema
+                        </div>
+                    </div>
+                    <div class="roles-list">
+                        <div class="role-item">
+                            <div class="role-icon shield">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                            </div>
+                            <div class="role-info">
+                                <strong>Administrador</strong>
+                                <p>Gestiona usuarios, materias y asignaciones. Supervisa reportes, actividades y calificaciones.</p>
+                            </div>
+                        </div>
+                        <div class="role-item">
+                            <div class="role-icon person">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                            </div>
+                            <div class="role-info">
+                                <strong>Docente</strong>
+                                <p>Crea y planifica actividades, recibe tareas, califica y agrega observaciones.</p>
+                            </div>
+                        </div>
+                        <div class="role-item">
+                            <div class="role-icon student">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 11-6-11-6z"/></svg>
+                            </div>
+                            <div class="role-info">
+                                <strong>Estudiante</strong>
+                                <p>Ingresa al panel, revisa sus calificaciones, observaciones y retroalimentación.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTTOM GRID -->
+            <div class="bottom-grid">
+                <!-- ALCANCE PRINCIPAL -->
+                <div class="card alcance-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            Alcance principal
+                        </div>
+                    </div>
+                    <p class="alcance-text">El sistema se enfoca principalmente en la gestión de calificaciones, tareas, actividades y observaciones.</p>
+                    <div class="alcance-target">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    </div>
+                </div>
+
+                <!-- MATERIAS ASIGNADAS -->
+                <div class="card materias-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 14H8v-2h8v2zm0-4H8v-2h8v2zm0-4H8V6h8v2z"/></svg>
+                            Materias asignadas
+                        </div>
+                        <div class="card-actions">
+                            <a href="#" class="card-link">Ver todas</a>
+                            <button class="icon-btn">‹</button>
+                            <button class="icon-btn">›</button>
+                        </div>
+                    </div>
+                    <div class="materia-cards">
+                        <div class="materia-item blue-border">
+                            <span class="semestre-tag">5.° SEMESTRE</span>
+                            <h4>Administración de Servidores II</h4>
+                            <p>Docente: Juan Pérez</p>
+                            <p>Estudiantes: 28</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 78%"></div>
+                            </div>
+                            <span class="progress-label">78%</span>
+                        </div>
+                        <div class="materia-item cyan-border">
+                            <span class="semestre-tag">3.° SEMESTRE</span>
+                            <h4>Fundamentos de Diseño Web</h4>
+                            <p>Docente: Ana Gómez</p>
+                            <p>Estudiantes: 30</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 85%"></div>
+                            </div>
+                            <span class="progress-label">85%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACTIVIDADES DEL CURSO -->
+                <div class="card actividades-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+                            Actividades del curso
+                        </div>
+                    </div>
+                    <div class="actividad-list">
+                        <div class="actividad-item">
+                            <div class="act-tag practico">PRÁCTICO</div>
+                            <div class="act-info">
+                                <span class="act-title">Posicionamiento CSS</span>
+                                <span class="act-date">📅 Fecha límite: 22 May 2025</span>
+                            </div>
+                        </div>
+                        <div class="actividad-item">
+                            <div class="act-tag teorico">TEÓRICO</div>
+                            <div class="act-info">
+                                <span class="act-title">Eventos JavaScript</span>
+                                <span class="act-sub">Cuestionario</span>
+                                <span class="act-date">📅 Fecha límite: 23 May 2025</span>
+                            </div>
+                        </div>
+                        <div class="actividad-item">
+                            <div class="act-tag practico">PRÁCTICO</div>
+                            <div class="act-info">
+                                <span class="act-title">Menú Hamburguesa</span>
+                                <span class="act-sub">Tarea</span>
+                                <span class="act-date">📅 Fecha límite: 28 May 2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ENTREGAS Y CALIFICACIONES -->
+                <div class="card entregas-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+                            Entregas y calificaciones
+                        </div>
+                        <a href="#" class="card-link">Ver todas</a>
+                    </div>
+                    <table class="entregas-table">
+                        <thead>
+                            <tr>
+                                <th>Estudiante</th>
+                                <th>Estado</th>
+                                <th>Calificación</th>
+                                <th>Observación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Estudiante A</td>
+                                <td><span class="badge enviado">Enviado</span></td>
+                                <td>95 / 100</td>
+                                <td>Muy buen trabajo</td>
+                            </tr>
+                            <tr>
+                                <td>Estudiante B</td>
+                                <td><span class="badge enviado">Enviado</span></td>
+                                <td>88 / 100</td>
+                                <td>Revisar detalle</td>
+                            </tr>
+                            <tr>
+                                <td>Estudiante C</td>
+                                <td><span class="badge no-enviado">No enviado</span></td>
+                                <td>—</td>
+                                <td>Sin entrega</td>
+                            </tr>
+                            <tr>
+                                <td>Estudiante D</td>
+                                <td><span class="badge enviado">Enviado</span></td>
+                                <td>100 / 100</td>
+                                <td>Excelente</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- AGENDA PRÓXIMA -->
+                <div class="card agenda-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+                            Agenda próxima
+                        </div>
+                        <a href="#" class="card-link">Ver agenda completa</a>
+                    </div>
+                    <div class="agenda-events">
+                        <div class="agenda-event">
+                            <div class="event-date">
+                                <span class="event-day">22</span>
+                                <span class="event-month">MAY</span>
+                            </div>
+                            <div class="event-info">
+                                <span class="event-title">Reunión de Padres - 2.° Año</span>
+                                <span class="event-place">Aula Magna</span>
+                            </div>
+                            <span class="event-time">18:00</span>
+                        </div>
+                        <div class="agenda-event">
+                            <div class="event-date">
+                                <span class="event-day">23</span>
+                                <span class="event-month">MAY</span>
+                            </div>
+                            <div class="event-info">
+                                <span class="event-title">Entrega de Planificaciones</span>
+                                <span class="event-place">Secretaría Académica</span>
+                            </div>
+                            <span class="event-time">10:00</span>
+                        </div>
+                        <div class="agenda-event">
+                            <div class="event-date">
+                                <span class="event-day">28</span>
+                                <span class="event-month">MAY</span>
+                            </div>
+                            <div class="event-info">
+                                <span class="event-title">Capacitación Docente</span>
+                                <span class="event-place">Sala de Informática</span>
+                            </div>
+                            <span class="event-time">14:30</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACCIONES RÁPIDAS -->
+            <div class="card acciones-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+                        Acciones rápidas
+                    </div>
+                </div>
+                <div class="acciones-grid">
+                    <button class="accion-btn" onclick="showToast('Registrar Docente')">
+                        <div class="accion-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3z"/></svg>
+                        </div>
+                        <span>Registrar docente</span>
+                    </button>
+                    <button class="accion-btn" onclick="showToast('Registrar Materia')">
+                        <div class="accion-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 14H8v-2h8v2zm0-4H8v-2h8v2zm0-4H8V6h8v2z"/></svg>
+                        </div>
+                        <span>Registrar materia</span>
+                    </button>
+                    <button class="accion-btn" onclick="showToast('Matricular Estudiante')">
+                        <div class="accion-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 11-6-11-6z"/></svg>
+                        </div>
+                        <span>Matricular estudiante</span>
+                    </button>
+                    <button class="accion-btn" onclick="showToast('Crear Actividad')">
+                        <div class="accion-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                        </div>
+                        <span>Crear actividad</span>
+                    </button>
+                    <button class="accion-btn" onclick="showToast('Generando Reporte...')">
+                        <div class="accion-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                        </div>
+                        <span>Generar reporte</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- RESUMEN DEL PROCESO -->
+            <div class="card proceso-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+                        Resumen del proceso
+                    </div>
+                </div>
+                <div class="proceso-flow">
+                    <div class="proceso-step">
+                        <div class="proceso-avatar admin">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                        </div>
+                        <div class="proceso-info">
+                            <strong>Administrador</strong>
+                            <p>organiza</p>
+                            <small>Configura el sistema, asigna recursos y supervisa procesos.</small>
+                        </div>
+                    </div>
+                    <div class="proceso-arrow">→</div>
+                    <div class="proceso-step">
+                        <div class="proceso-avatar docente">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
+                        <div class="proceso-info">
+                            <strong>Docente</strong>
+                            <p>gestiona y califica</p>
+                            <small>Planifica actividades, recibe tareas y evalúa el aprendizaje.</small>
+                        </div>
+                    </div>
+                    <div class="proceso-arrow">→</div>
+                    <div class="proceso-step">
+                        <div class="proceso-avatar estudiante">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 11-6-11-6z"/></svg>
+                        </div>
+                        <div class="proceso-info">
+                            <strong>Estudiante</strong>
+                            <p>consulta resultados</p>
+                            <small>Revisa sus calificaciones, observaciones y avances.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ════ ADMINISTRADORES PAGE ════ -->
+        <section class="page" id="page-administradores">
+            <div class="mod-header-row">
+                <div>
+                    <h2 class="mod-title"><svg width="20" height="20" viewBox="0 0 24 24" fill="#3b82f6"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg> Gestión de Administradores</h2>
+                    <p class="mod-sub">Registro y control de usuarios con acceso administrativo.</p>
+                </div>
+                <div class="mod-header-actions">
+                    <button class="btn-mod-new" onclick="openModal('admin')"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> Nuevo Administrador</button>
+                    <button class="btn-mod-export" onclick="exportarModulo('admins','Administradores')"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Exportar</button>
+                </div>
+            </div>
+            <div class="mod-filter-bar">
+                <div class="mod-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" id="searchAdmin" placeholder="Buscar administradores..." oninput="renderTabla('admins')"></div>
+                <select class="agenda-filter-select" id="filterAdminEstado" onchange="renderTabla('admins')"><option value="">Todos los estados</option><option>Activo</option><option>Inactivo</option></select>
+            </div>
+            <div class="mod-table-wrap">
+                <table class="mod-table"><thead><tr><th>#</th><th>Nombre</th><th>Email</th><th>CI / Usuario</th><th>Teléfono</th><th>Estado</th><th>Fecha registro</th><th>Acciones</th></tr></thead>
+                <tbody id="tbody-admins"></tbody></table>
+                <div class="mod-pagination"><span id="info-admins" class="pagination-info"></span></div>
+            </div>
+        </section>
+
+        <!-- MODAL ADMINISTRADOR -->
+        <div class="modal-backdrop" id="modal-backdrop-admin" onclick="closeModal('admin')"></div>
+        <div class="modal-evento" id="modal-admin">
+            <div class="modal-evento-header"><h3 id="modal-admin-title">Nuevo Administrador</h3><button class="modal-close" onclick="closeModal('admin')">✕</button></div>
+            <div class="modal-evento-body">
+                <input type="hidden" id="admin-id">
+                <div class="form-row-2">
+                    <div class="form-group"><label>Nombre completo *</label><input type="text" id="admin-nombre" class="form-control" placeholder="Ej. Juan Pérez"></div>
+                    <div class="form-group"><label>Email *</label><input type="email" id="admin-email" class="form-control" placeholder="correo@colegio.edu"></div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>CI / Usuario *</label><input type="text" id="admin-ci" class="form-control" placeholder="12345678"></div>
+                    <div class="form-group"><label>Teléfono</label><input type="text" id="admin-telefono" class="form-control" placeholder="+591 xxxxxxx"></div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Contraseña</label><input type="password" id="admin-pass" class="form-control" placeholder="Dejar vacío para no cambiar"></div>
+                    <div class="form-group"><label>Estado</label><select id="admin-estado" class="form-control"><option>Activo</option><option>Inactivo</option></select></div>
+                </div>
+                <div class="form-group"><label>Observaciones</label><textarea id="admin-obs" class="form-control" rows="2" placeholder="Notas adicionales..."></textarea></div>
+            </div>
+            <div class="modal-evento-footer"><button class="btn-modal-cancel" onclick="closeModal('admin')">Cancelar</button><button class="btn-modal-save" onclick="guardar('admins')">Guardar</button></div>
+        </div>
+
+        <!-- ════ DOCENTES PAGE ════ -->
+        <section class="page" id="page-docentes">
+            <div class="mod-header-row">
+                <div>
+                    <h2 class="mod-title"><svg width="20" height="20" viewBox="0 0 24 24" fill="#10b981"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3z"/></svg> Gestión de Docentes</h2>
+                    <p class="mod-sub">Registro y asignación de docentes a materias.</p>
+                </div>
+                <div class="mod-header-actions">
+                    <button class="btn-mod-new" onclick="openModal('docente')"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> Nuevo Docente</button>
+                    <button class="btn-mod-export" onclick="exportarModulo('docentes','Docentes')"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Exportar</button>
+                </div>
+            </div>
+            <div class="mod-filter-bar">
+                <div class="mod-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" id="searchDocente" placeholder="Buscar docentes..." oninput="renderTabla('docentes')"></div>
+                <select class="agenda-filter-select" id="filterDocenteEspecialidad" onchange="renderTabla('docentes')"><option value="">Todas las especialidades</option><option>Matemáticas</option><option>Lenguaje</option><option>Ciencias</option><option>Informática</option><option>Historia</option><option>Inglés</option></select>
+                <select class="agenda-filter-select" id="filterDocenteEstado" onchange="renderTabla('docentes')"><option value="">Todos los estados</option><option>Activo</option><option>Inactivo</option></select>
+            </div>
+            <div class="mod-table-wrap">
+                <table class="mod-table"><thead><tr><th>#</th><th>Docente</th><th>Email</th><th>CI</th><th>Especialidad</th><th>Materias</th><th>Teléfono</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody id="tbody-docentes"></tbody></table>
+                <div class="mod-pagination"><span id="info-docentes" class="pagination-info"></span></div>
+            </div>
+        </section>
+
+        <!-- MODAL DOCENTE -->
+        <div class="modal-backdrop" id="modal-backdrop-docente" onclick="closeModal('docente')"></div>
+        <div class="modal-evento" id="modal-docente">
+            <div class="modal-evento-header"><h3 id="modal-docente-title">Nuevo Docente</h3><button class="modal-close" onclick="closeModal('docente')">✕</button></div>
+            <div class="modal-evento-body">
+                <input type="hidden" id="docente-id">
+                <div class="form-row-2">
+                    <div class="form-group"><label>Nombre completo *</label><input type="text" id="docente-nombre" class="form-control" placeholder="Ej. Prof. Ana López"></div>
+                    <div class="form-group"><label>Email *</label><input type="email" id="docente-email" class="form-control" placeholder="docente@colegio.edu"></div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>CI *</label><input type="text" id="docente-ci" class="form-control" placeholder="12345678"></div>
+                    <div class="form-group"><label>Teléfono</label><input type="text" id="docente-telefono" class="form-control" placeholder="+591 xxxxxxx"></div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Especialidad *</label><select id="docente-especialidad" class="form-control"><option value="">Seleccionar...</option><option>Matemáticas</option><option>Lenguaje</option><option>Ciencias</option><option>Informática</option><option>Historia</option><option>Inglés</option><option>Educación Física</option><option>Arte</option></select></div>
+                    <div class="form-group"><label>Estado</label><select id="docente-estado" class="form-control"><option>Activo</option><option>Inactivo</option></select></div>
+                </div>
+                <div class="form-group"><label>Materias asignadas</label><input type="text" id="docente-materias" class="form-control" placeholder="Ej. Matemáticas 1, Álgebra..."></div>
+                <div class="form-group"><label>Dirección / Notas</label><textarea id="docente-obs" class="form-control" rows="2" placeholder="Dirección, observaciones..."></textarea></div>
+                <!-- SECCIÓN CONTRASEÑA DOCENTE -->
+                <div class="pass-section-divider">
+                    <span class="pass-divider-line"></span>
+                    <span class="pass-divider-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg> Acceso al sistema</span>
+                    <span class="pass-divider-line"></span>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label>Crear contraseña</label>
+                        <div class="pass-input-wrap">
+                            <input type="password" id="docente-pass" class="form-control" placeholder="Mínimo 6 caracteres" oninput="checkPassStrength('docente-pass','doc-pass-strength')">
+                            <button type="button" class="pass-toggle-btn" onclick="togglePassVis('docente-pass',this)" title="Mostrar/ocultar">
+                                <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                            </button>
+                        </div>
+                        <div class="pass-strength-bar" id="doc-pass-strength">
+                            <div class="pass-strength-fill"></div>
+                            <span class="pass-strength-label"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmar contraseña</label>
+                        <div class="pass-input-wrap">
+                            <input type="password" id="docente-pass-confirm" class="form-control" placeholder="Repite la contraseña" oninput="checkPassMatch('docente-pass','docente-pass-confirm','doc-pass-match')">
+                            <button type="button" class="pass-toggle-btn" onclick="togglePassVis('docente-pass-confirm',this)" title="Mostrar/ocultar">
+                                <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                            </button>
+                        </div>
+                        <div class="pass-match-msg" id="doc-pass-match"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-evento-footer"><button class="btn-modal-cancel" onclick="closeModal('docente')">Cancelar</button><button class="btn-modal-save" onclick="guardar('docentes')">Guardar</button></div>
+        </div>
+
+        <!-- ════ ESTUDIANTES PAGE ════ -->
+        <section class="page" id="page-estudiantes">
+            <div class="mod-header-row">
+                <div>
+                    <h2 class="mod-title"><svg width="20" height="20" viewBox="0 0 24 24" fill="#f59e0b"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 11-6-11-6z"/></svg> Gestión de Estudiantes</h2>
+                    <p class="mod-sub">Matriculación y seguimiento de estudiantes.</p>
+                </div>
+                <div class="mod-header-actions">
+                    <button class="btn-mod-new" onclick="openModal('estudiante')"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> Nuevo Estudiante</button>
+                    <button class="btn-mod-export" onclick="exportarModulo('estudiantes','Estudiantes')"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Exportar</button>
+                    <button class="btn-mod-export" onclick="navigate('inscripcion', document.getElementById('nav-inscripcion'))" style="background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(59,130,246,0.2));color:#a78bfa;border-color:rgba(139,92,246,0.4);display:flex;align-items:center;gap:6px">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-1 5h-2v-2h2v2zm2-4H8v-2h6v2z"/></svg>
+                        Ver Inscripciones
+                    </button>
+                </div>
+            </div>
+            <!-- Banner de vinculación con Inscripción -->
+            <div style="background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(139,92,246,0.08));border:1px solid rgba(139,92,246,0.2);border-radius:12px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+                <div style="display:flex;align-items:center;gap:10px">
+                    <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17 1H7c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm-1 14H8v-2h8v2zm0-4H8V9h8v2zm0-4H8V5h8v2z"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-size:12px;font-weight:600;color:var(--text-primary)">Módulo vinculado con Inscripción</div>
+                        <div style="font-size:11px;color:var(--text-muted)">Al aprobar una inscripción, el estudiante se registra aquí automáticamente.</div>
+                    </div>
+                </div>
+                <button onclick="navigate('inscripcion', document.getElementById('nav-inscripcion'))" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;border:none;padding:7px 14px;border-radius:10px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">
+                    Ir a Inscripción →
+                </button>
+            </div>
+            <div class="mod-filter-bar">
+                <div class="mod-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" id="searchEstudiante" placeholder="Buscar estudiantes..." oninput="renderTabla('estudiantes')"></div>
+                <select class="agenda-filter-select" id="filterEstudianteSemestre" onchange="renderTabla('estudiantes')"><option value="">Todos los cursos</option><option>1.° Secundaria</option><option>2.° Secundaria</option><option>3.° Secundaria</option><option>4.° Secundaria</option><option>5.° Secundaria</option><option>6.° Secundaria</option></select>
+                <select class="agenda-filter-select" id="filterEstudianteEstado" onchange="renderTabla('estudiantes')"><option value="">Todos los estados</option><option>Activo</option><option>Inactivo</option><option>Egresado</option></select>
+            </div>
+            <div class="mod-table-wrap">
+                <table class="mod-table"><thead><tr><th>#</th><th>Estudiante</th><th>CI</th><th>Curso</th><th>Tutor / Apoderado</th><th>Teléfono tutor</th><th>Email</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody id="tbody-estudiantes"></tbody></table>
+                <div class="mod-pagination"><span id="info-estudiantes" class="pagination-info"></span></div>
+            </div>
+        </section>
+
+        <!-- MODAL ESTUDIANTE -->
+        <div class="modal-backdrop" id="modal-backdrop-estudiante" onclick="closeModal('estudiante')"></div>
+        <div class="modal-evento" id="modal-estudiante">
+            <div class="modal-evento-header"><h3 id="modal-estudiante-title">Nuevo Estudiante</h3><button class="modal-close" onclick="closeModal('estudiante')">✕</button></div>
+            <div class="modal-evento-body">
+                <input type="hidden" id="estudiante-id">
+                <div class="form-row-2">
+                    <div class="form-group"><label>Nombre completo *</label><input type="text" id="estudiante-nombre" class="form-control" placeholder="Ej. Carlos Mamani"></div>
+                    <div class="form-group"><label>CI *</label><input type="text" id="estudiante-ci" class="form-control" placeholder="12345678"></div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Curso *</label><select id="estudiante-semestre" class="form-control"><option value="">Seleccionar...</option><option>1.° Secundaria</option><option>2.° Secundaria</option><option>3.° Secundaria</option><option>4.° Secundaria</option><option>5.° Secundaria</option><option>6.° Secundaria</option></select></div>
+                    <div class="form-group"><label>Fecha de nacimiento</label><input type="date" id="estudiante-nacimiento" class="form-control"></div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Email</label><input type="email" id="estudiante-email" class="form-control" placeholder="estudiante@correo.com"></div>
+                    <div class="form-group"><label>Teléfono</label><input type="text" id="estudiante-telefono" class="form-control" placeholder="+591 xxxxxxx"></div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Tutor / Apoderado</label><input type="text" id="estudiante-tutor" class="form-control" placeholder="Nombre del tutor"></div>
+                    <div class="form-group"><label>Teléfono del tutor</label><input type="text" id="estudiante-tutor-tel" class="form-control" placeholder="+591 xxxxxxx"></div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Estado</label><select id="estudiante-estado" class="form-control"><option>Activo</option><option>Inactivo</option><option>Egresado</option></select></div>
+                    <div class="form-group"><label>Dirección</label><input type="text" id="estudiante-direccion" class="form-control" placeholder="Dirección del estudiante"></div>
+                </div>
+                <div class="form-group"><label>Observaciones</label><textarea id="estudiante-obs" class="form-control" rows="2" placeholder="Notas adicionales..."></textarea></div>
+                <!-- SECCIÓN CONTRASEÑA -->
+                <div class="pass-section-divider">
+                    <span class="pass-divider-line"></span>
+                    <span class="pass-divider-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg> Acceso al sistema</span>
+                    <span class="pass-divider-line"></span>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label>Crear contraseña</label>
+                        <div class="pass-input-wrap">
+                            <input type="password" id="estudiante-pass" class="form-control" placeholder="Mínimo 6 caracteres" oninput="checkPassStrength('estudiante-pass','est-pass-strength')">
+                            <button type="button" class="pass-toggle-btn" onclick="togglePassVis('estudiante-pass',this)" title="Mostrar/ocultar">
+                                <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                            </button>
+                        </div>
+                        <div class="pass-strength-bar" id="est-pass-strength">
+                            <div class="pass-strength-fill"></div>
+                            <span class="pass-strength-label"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmar contraseña</label>
+                        <div class="pass-input-wrap">
+                            <input type="password" id="estudiante-pass-confirm" class="form-control" placeholder="Repite la contraseña" oninput="checkPassMatch('estudiante-pass','estudiante-pass-confirm','est-pass-match')">
+                            <button type="button" class="pass-toggle-btn" onclick="togglePassVis('estudiante-pass-confirm',this)" title="Mostrar/ocultar">
+                                <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                            </button>
+                        </div>
+                        <div class="pass-match-msg" id="est-pass-match"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-evento-footer"><button class="btn-modal-cancel" onclick="closeModal('estudiante')">Cancelar</button><button class="btn-modal-save" onclick="guardar('estudiantes')">Guardar</button></div>
+        </div>
+
+        <!-- ════ MATERIAS PAGE ════ -->
+        <section class="page" id="page-materias">
+            <div class="mod-header-row">
+                <div>
+                    <h2 class="mod-title"><svg width="20" height="20" viewBox="0 0 24 24" fill="#8b5cf6"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 14H8v-2h8v2zm0-4H8v-2h8v2zm0-4H8V6h8v2z"/></svg> Gestión de Materias</h2>
+                    <p class="mod-sub">Creación y asignación de materias por curso.</p>
+                </div>
+                <div class="mod-header-actions">
+                    <button class="btn-mod-new" onclick="openModal('materia')"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> Nueva Materia</button>
+                    <button class="btn-mod-export" onclick="exportarModulo('materias','Materias')"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Exportar</button>
+                </div>
+            </div>
+            <div class="mod-filter-bar">
+                <div class="mod-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" id="searchMateria" placeholder="Buscar materias..." oninput="renderTabla('materias')"></div>
+                <select class="agenda-filter-select" id="filterMateriaSemestre" onchange="renderTabla('materias')"><option value="">Todos los cursos</option><option>1.° Secundaria</option><option>2.° Secundaria</option><option>3.° Secundaria</option><option>4.° Secundaria</option><option>5.° Secundaria</option><option>6.° Secundaria</option></select>
+            </div>
+            <div class="mod-table-wrap">
+                <table class="mod-table"><thead><tr><th>#</th><th>Materia</th><th>Curso</th><th>Docente asignado</th><th>Estudiantes</th><th>Horas/semana</th><th>Descripción</th><th>Acciones</th></tr></thead>
+                <tbody id="tbody-materias"></tbody></table>
+                <div class="mod-pagination"><span id="info-materias" class="pagination-info"></span></div>
+            </div>
+        </section>
+
+        <!-- MODAL MATERIA -->
+        <div class="modal-backdrop" id="modal-backdrop-materia" onclick="closeModal('materia')"></div>
+        <div class="modal-evento" id="modal-materia">
+            <div class="modal-evento-header"><h3 id="modal-materia-title">Nueva Materia</h3><button class="modal-close" onclick="closeModal('materia')">✕</button></div>
+            <div class="modal-evento-body">
+                <input type="hidden" id="materia-id">
+                <div class="form-row-2">
+                    <div class="form-group"><label>Nombre de la materia *</label><input type="text" id="materia-nombre" class="form-control" placeholder="Ej. Matemáticas I"></div>
+                    <div class="form-group"><label>Curso *</label><select id="materia-semestre" class="form-control"><option value="">Seleccionar...</option><option>1.° Secundaria</option><option>2.° Secundaria</option><option>3.° Secundaria</option><option>4.° Secundaria</option><option>5.° Secundaria</option><option>6.° Secundaria</option></select></div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Docente asignado</label><input type="text" id="materia-docente" class="form-control" placeholder="Nombre del docente"></div>
+                    <div class="form-group"><label>Horas por semana</label><input type="number" id="materia-horas" class="form-control" placeholder="4" min="1" max="20"></div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Nro. estudiantes</label><input type="number" id="materia-estudiantes" class="form-control" placeholder="30" min="0"></div>
+                    <div class="form-group"><label>Aula / Laboratorio</label><input type="text" id="materia-aula" class="form-control" placeholder="Ej. Aula 101"></div>
+                </div>
+                <div class="form-group"><label>Descripción</label><textarea id="materia-desc" class="form-control" rows="2" placeholder="Descripción de la materia..."></textarea></div>
+            </div>
+            <div class="modal-evento-footer"><button class="btn-modal-cancel" onclick="closeModal('materia')">Cancelar</button><button class="btn-modal-save" onclick="guardar('materias')">Guardar</button></div>
+        </div>
+
+        <!-- ════ ACTIVIDADES PAGE ════ -->
+        <section class="page" id="page-actividades">
+            <div class="mod-header-row">
+                <div>
+                    <h2 class="mod-title"><svg width="20" height="20" viewBox="0 0 24 24" fill="#06b6d4"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg> Gestión de Actividades</h2>
+                    <p class="mod-sub">Tareas, evaluaciones y prácticas por materia.</p>
+                </div>
+                <div class="mod-header-actions">
+                    <button class="btn-mod-new" onclick="openModal('actividad')"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> Nueva Actividad</button>
+                    <button class="btn-mod-export" onclick="exportarModulo('actividades','Actividades')"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Exportar</button>
+                </div>
+            </div>
+            <div class="mod-filter-bar">
+                <div class="mod-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" id="searchActividad" placeholder="Buscar actividades..." oninput="renderTabla('actividades')"></div>
+                <select class="agenda-filter-select" id="filterActividadTipo" onchange="renderTabla('actividades')"><option value="">Todos los tipos</option><option>Tarea</option><option>Examen</option><option>Práctica</option><option>Proyecto</option><option>Cuestionario</option></select>
+                <select class="agenda-filter-select" id="filterActividadEstado" onchange="renderTabla('actividades')"><option value="">Todos los estados</option><option>Activa</option><option>Cerrada</option><option>Pendiente</option></select>
+            </div>
+            <div class="mod-table-wrap">
+                <table class="mod-table"><thead><tr><th>#</th><th>Actividad</th><th>Tipo</th><th>Materia</th><th>Docente</th><th>Fecha límite</th><th>Puntos</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody id="tbody-actividades"></tbody></table>
+                <div class="mod-pagination"><span id="info-actividades" class="pagination-info"></span></div>
+            </div>
+        </section>
+
+        <!-- MODAL ACTIVIDAD -->
+        <div class="modal-backdrop" id="modal-backdrop-actividad" onclick="closeModal('actividad')"></div>
+        <div class="modal-evento" id="modal-actividad">
+            <div class="modal-evento-header"><h3 id="modal-actividad-title">Nueva Actividad</h3><button class="modal-close" onclick="closeModal('actividad')">✕</button></div>
+            <div class="modal-evento-body">
+                <input type="hidden" id="actividad-id">
+                <div class="form-row-2">
+                    <div class="form-group"><label>Nombre de la actividad *</label><input type="text" id="actividad-nombre" class="form-control" placeholder="Ej. Examen Parcial 1"></div>
+                    <div class="form-group"><label>Tipo *</label><select id="actividad-tipo" class="form-control"><option value="">Seleccionar...</option><option>Tarea</option><option>Examen</option><option>Práctica</option><option>Proyecto</option><option>Cuestionario</option></select></div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Materia *</label><input type="text" id="actividad-materia" class="form-control" placeholder="Ej. Matemáticas I"></div>
+                    <div class="form-group"><label>Docente</label><input type="text" id="actividad-docente" class="form-control" placeholder="Nombre del docente"></div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Fecha límite</label><input type="date" id="actividad-fecha" class="form-control"></div>
+                    <div class="form-group"><label>Puntos / Calificación máx.</label><input type="number" id="actividad-puntos" class="form-control" placeholder="100" min="1"></div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Estado</label><select id="actividad-estado" class="form-control"><option>Activa</option><option>Pendiente</option><option>Cerrada</option></select></div>
+                    <div class="form-group"><label>Semestre</label><select id="actividad-semestre" class="form-control"><option value="">Todos</option><option>1.° Semestre</option><option>2.° Semestre</option><option>3.° Semestre</option><option>4.° Semestre</option><option>5.° Semestre</option><option>6.° Semestre</option></select></div>
+                </div>
+                <div class="form-group"><label>Descripción / Instrucciones</label><textarea id="actividad-desc" class="form-control" rows="3" placeholder="Instrucciones de la actividad..."></textarea></div>
+            </div>
+            <div class="modal-evento-footer"><button class="btn-modal-cancel" onclick="closeModal('actividad')">Cancelar</button><button class="btn-modal-save" onclick="guardar('actividades')">Guardar</button></div>
+        </div>
+        <!-- ════ AGENDA PAGE ════ -->
+        <section class="page" id="page-agenda">
+
+            <!-- Bienvenida + fecha -->
+            <div class="agenda-welcome-banner">
+                <div class="agenda-welcome-text">
+                    <span class="agenda-greeting">¡Bienvenido, Administrador!</span>
+                    <span class="agenda-date" id="agendaDate"></span>
+                </div>
+                <div class="agenda-live-badge">
+                    <span class="live-dot"></span> En vivo
+                </div>
+            </div>
+
+            <!-- Título + acciones principales -->
+            <div class="agenda-header-row">
+                <div>
+                    <h2 class="agenda-section-title">Agenda de Eventos</h2>
+                    <p class="agenda-section-sub">Consulta y gestiona todos los eventos programados en el sistema.</p>
+                </div>
+                <div class="agenda-header-actions">
+                    <button class="btn-agenda-new" id="btnNuevoEvento" onclick="openNuevoEventoModal()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                        Nuevo Evento
+                    </button>
+                    <button class="btn-agenda-export" onclick="exportarAgenda()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        Exportar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="agenda-filters-bar">
+                <select class="agenda-filter-select" id="filterTipo" onchange="filterAgenda()">
+                    <option value="">Todos los tipos</option>
+                    <option value="Reunión">Reunión</option>
+                    <option value="Examen">Examen</option>
+                    <option value="Entrega">Entrega</option>
+                    <option value="Charla">Charla</option>
+                    <option value="Académico">Académico</option>
+                </select>
+                <select class="agenda-filter-select" id="filterEstado" onchange="filterAgenda()">
+                    <option value="">Todos los estados</option>
+                    <option value="Confirmado">Confirmado</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Programado">Programado</option>
+                </select>
+                <div class="agenda-filter-group">
+                    <span class="filter-label-text">Ordenar por</span>
+                    <select class="agenda-filter-select" id="filterOrden" onchange="filterAgenda()">
+                        <option value="fecha">Fecha (más próxima)</option>
+                        <option value="prioridad">Prioridad</option>
+                        <option value="nombre">Nombre</option>
+                    </select>
+                </div>
+                <select class="agenda-filter-select" id="filterDir" onchange="filterAgenda()">
+                    <option value="asc">Ascendente</option>
+                    <option value="desc">Descendente</option>
+                </select>
+                <div class="agenda-search-inline">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    <input type="text" id="agendaSearch" placeholder="Buscar eventos..." oninput="filterAgenda()">
+                </div>
+            </div>
+
+            <!-- Layout: tabla + panel detalle -->
+            <div class="agenda-layout" id="agendaLayout">
+
+                <!-- TABLA DE EVENTOS -->
+                <div class="agenda-table-wrap" id="agendaTableWrap">
+                    <table class="agenda-table" id="agendaTable">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Evento</th>
+                                <th>Tipo</th>
+                                <th>Fecha y hora</th>
+                                <th>Lugar</th>
+                                <th>Prioridad</th>
+                                <th>Estado</th>
+                                <th>Organizador</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="agendaTableBody">
+                            <!-- Filas generadas por JS -->
+                        </tbody>
+                    </table>
+                    <div class="agenda-pagination">
+                        <span class="pagination-info" id="paginationInfo">Mostrando 1 a 6 de 24 eventos</span>
+                        <div class="pagination-btns">
+                            <button class="page-btn active">1</button>
+                            <button class="page-btn">2</button>
+                            <button class="page-btn">3</button>
+                            <button class="page-btn">4</button>
+                            <button class="page-btn">5</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANEL DETALLE DEL EVENTO -->
+                <aside class="evento-detail-panel" id="eventoDetailPanel">
+                    <div class="panel-header">
+                        <span class="panel-title">Detalle del evento</span>
+                        <button class="panel-close-btn" onclick="cerrarDetalle()">✕</button>
+                    </div>
+                    <div class="panel-body" id="panelBody">
+                        <div class="panel-empty">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.3"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+                            <p>Selecciona un evento para ver su detalle</p>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+        </section>
+
+        <!-- ════ MODAL NUEVO EVENTO ════ -->
+        <div class="modal-backdrop" id="modalBackdrop" onclick="closeNuevoEventoModal()"></div>
+        <div class="modal-evento" id="modalEvento">
+            <div class="modal-evento-header">
+                <h3 id="modalEventoTitle">Nuevo Evento</h3>
+                <button class="modal-close" onclick="closeNuevoEventoModal()">✕</button>
+            </div>
+            <div class="modal-evento-body">
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label>Nombre del evento *</label>
+                        <input type="text" id="evNombre" class="form-control" placeholder="Ej. Reunión de docentes">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de evento *</label>
+                        <select id="evTipo" class="form-control">
+                            <option value="">Seleccionar...</option>
+                            <option>Reunión</option>
+                            <option>Examen</option>
+                            <option>Entrega</option>
+                            <option>Charla</option>
+                            <option>Académico</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label>Fecha *</label>
+                        <input type="date" id="evFecha" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Hora *</label>
+                        <input type="time" id="evHora" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label>Lugar</label>
+                        <input type="text" id="evLugar" class="form-control" placeholder="Ej. Sala de reuniones">
+                    </div>
+                    <div class="form-group">
+                        <label>Prioridad</label>
+                        <select id="evPrioridad" class="form-control">
+                            <option>Alta</option>
+                            <option selected>Media</option>
+                            <option>Baja</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="evDescripcion" class="form-control" rows="3" placeholder="Describe el evento..."></textarea>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label>Organizador</label>
+                        <input type="text" id="evOrganizador" class="form-control" value="Administrador">
+                    </div>
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <select id="evEstado" class="form-control">
+                            <option>Confirmado</option>
+                            <option selected>Pendiente</option>
+                            <option>Programado</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-evento-footer">
+                <button class="btn-modal-cancel" onclick="closeNuevoEventoModal()">Cancelar</button>
+                <button class="btn-modal-save" onclick="guardarEvento()">Guardar Evento</button>
+            </div>
+        </div>
+        <!-- ════ CALIFICACIONES PAGE ════ -->
+        <section class="page" id="page-calificaciones">
+
+            <!-- Header -->
+            <div class="mod-header-row">
+                <div>
+                    <h2 class="mod-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#10b981"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+                        Calificaciones
+                    </h2>
+                    <p class="mod-sub">Historial completo de notas por estudiante, materia y actividad.</p>
+                </div>
+                <div class="mod-header-actions" style="display:flex;gap:10px;">
+                    <button class="btn-mod-export" style="background:rgba(59,130,246,0.15);color:#60a5fa;border-color:rgba(59,130,246,0.3)" onclick="initCalificaciones();showToast('🔄 Calificaciones actualizadas')">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                        Actualizar
+                    </button>
+                    <button class="btn-mod-export" onclick="exportarCalificaciones()">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        Exportar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats cards -->
+            <div class="calif-stats-row">
+                <div class="calif-stat-card blue">
+                    <div class="calif-stat-icon">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+                    </div>
+                    <div class="calif-stat-val" id="califPromedio">80.4</div>
+                    <div class="calif-stat-label">Promedio general</div>
+                </div>
+                <div class="calif-stat-card green">
+                    <div class="calif-stat-icon">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    </div>
+                    <div class="calif-stat-val" id="califAprobados">6</div>
+                    <div class="calif-stat-label">Aprobados (≥51)</div>
+                </div>
+                <div class="calif-stat-card red">
+                    <div class="calif-stat-icon">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg>
+                    </div>
+                    <div class="calif-stat-val" id="califReprobados">2</div>
+                    <div class="calif-stat-label">Reprobados (&lt;51)</div>
+                </div>
+            </div>
+
+            <!-- Distribución de calificaciones -->
+            <div class="card calif-dist-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                        Distribución de calificaciones
+                    </div>
+                </div>
+                <div class="calif-dist-bars">
+                    <div class="dist-row">
+                        <span class="dist-label">Sobresaliente (90–100)</span>
+                        <div class="dist-bar-wrap">
+                            <div class="dist-bar green-bar" id="barSobresaliente" style="width:0%"></div>
+                        </div>
+                        <span class="dist-count" id="countSobresaliente">0</span>
+                    </div>
+                    <div class="dist-row">
+                        <span class="dist-label">Bueno (71–89)</span>
+                        <div class="dist-bar-wrap">
+                            <div class="dist-bar yellow-bar" id="barBueno" style="width:0%"></div>
+                        </div>
+                        <span class="dist-count" id="countBueno">0</span>
+                    </div>
+                    <div class="dist-row">
+                        <span class="dist-label">En riesgo (&lt;51)</span>
+                        <div class="dist-bar-wrap">
+                            <div class="dist-bar red-bar" id="barRiesgo" style="width:0%"></div>
+                        </div>
+                        <span class="dist-count" id="countRiesgo">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtros por materia -->
+            <div class="calif-filter-tabs" id="califTabs">
+                <button class="calif-tab active" data-materia="" onclick="filtrarCalif(this, '')">Todas</button>
+                <button class="calif-tab" data-materia="Prog. Web" onclick="filtrarCalif(this, 'Prog. Web')">Prog. Web</button>
+                <button class="calif-tab" data-materia="Bases Datos" onclick="filtrarCalif(this, 'Bases Datos')">Bases Datos</button>
+                <button class="calif-tab" data-materia="Redes" onclick="filtrarCalif(this, 'Redes')">Redes</button>
+            </div>
+
+            <!-- Tabla de calificaciones -->
+            <div class="mod-table-wrap">
+                <table class="mod-table calif-table">
+                    <thead>
+                        <tr>
+                            <th>Estudiante</th>
+                            <th>Materia</th>
+                            <th>Actividad</th>
+                            <th>Nota</th>
+                            <th>Observación</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-calificaciones"></tbody>
+                </table>
+                <div class="mod-pagination">
+                    <span id="info-calificaciones" class="pagination-info"></span>
+                </div>
+            </div>
+        </section>
+        <!-- ════ REPORTES PAGE ════ -->
+        <section class="page" id="page-reportes">
+
+            <!-- Header + Exportar PDF -->
+            <div class="mod-header-row">
+                <div>
+                    <h2 class="mod-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#3b82f6"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                        Reportes
+                    </h2>
+                    <p class="mod-sub">Estadísticas académicas, rendimiento por materia y estado de actividades.</p>
+                </div>
+                <div class="mod-header-actions">
+                    <button class="btn-pdf-export" onclick="exportarReportePDF()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zm4.5 3h1v-4h-1v4zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6z"/>
+                        </svg>
+                        Exportar PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Selector de Bimestre -->
+            <div class="reporte-filter-bar">
+                <select class="reporte-bimestre-select" id="reporteBimestreSelect" onchange="cambiarBimestreReporte(this.value)">
+                    <option value="Bimestre 1" selected>Bimestre 1</option>
+                    <option value="Bimestre 2">Bimestre 2</option>
+                    <option value="Bimestre 3">Bimestre 3</option>
+                    <option value="Bimestre 4">Bimestre 4</option>
+                </select>
+            </div>
+
+            <!-- Card 1: Rendimiento general por materia -->
+            <div class="card reporte-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#f59e0b"><path d="M5 92h3v12H5V92zm6-28h3v40h-3V64zm6-16h3v56h-3V48zm6-32h3v88h-3V16z"/></svg>
+                        Rendimiento general por materia
+                    </div>
+                </div>
+                <div class="reporte-materias-list" id="reporteMateriasList">
+                    <div class="rep-materia-row">
+                        <span class="rep-materia-name">Prog. Web</span>
+                        <div class="rep-bar-wrap">
+                            <div class="rep-bar blue-bar" id="repBarProgWeb" style="width: 87%"></div>
+                        </div>
+                        <span class="rep-bar-val blue-text" id="repValProgWeb">87%</span>
+                    </div>
+                    <div class="rep-materia-row">
+                        <span class="rep-materia-name">Bases Datos</span>
+                        <div class="rep-bar-wrap">
+                            <div class="rep-bar green-bar" id="repBarBasesDatos" style="width: 74%"></div>
+                        </div>
+                        <span class="rep-bar-val green-text" id="repValBasesDatos">74%</span>
+                    </div>
+                    <div class="rep-materia-row">
+                        <span class="rep-materia-name">Redes</span>
+                        <div class="rep-bar-wrap">
+                            <div class="rep-bar yellow-bar" id="repBarRedes" style="width: 62%"></div>
+                        </div>
+                        <span class="rep-bar-val yellow-text" id="repValRedes">62%</span>
+                    </div>
+                    <div class="rep-materia-row">
+                        <span class="rep-materia-name">S.O.</span>
+                        <div class="rep-bar-wrap">
+                            <div class="rep-bar purple-bar" id="repBarSO" style="width: 91%"></div>
+                        </div>
+                        <span class="rep-bar-val purple-text" id="repValSO">91%</span>
+                    </div>
+                    <div class="rep-materia-row">
+                        <span class="rep-materia-name">Inglés</span>
+                        <div class="rep-bar-wrap">
+                            <div class="rep-bar red-bar" id="repBarIngles" style="width: 78%"></div>
+                        </div>
+                        <span class="rep-bar-val red-text" id="repValIngles">78%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Actividades por estado -->
+            <div class="card reporte-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+                        Actividades por estado – <span id="reporteBimestreTitulo">Bimestre 1</span>
+                    </div>
+                </div>
+                <div class="reporte-actividades-container">
+                    <!-- Gráfico de Columnas Verticales -->
+                    <div class="column-chart-wrap">
+                        <!-- Columna Completadas -->
+                        <div class="col-item">
+                            <span class="col-val green-text" id="colValCompletadas">100</span>
+                            <div class="col-bar-track">
+                                <div class="col-bar green-col" id="colBarCompletadas" style="height: 85%"></div>
+                            </div>
+                            <span class="col-label">Completadas</span>
+                        </div>
+                        <!-- Columna En progreso -->
+                        <div class="col-item">
+                            <span class="col-val yellow-text" id="colValProgreso">80</span>
+                            <div class="col-bar-track">
+                                <div class="col-bar yellow-col" id="colBarProgreso" style="height: 68%"></div>
+                            </div>
+                            <span class="col-label">En progreso</span>
+                        </div>
+                        <!-- Columna Pendientes -->
+                        <div class="col-item">
+                            <span class="col-val red-text" id="colValPendientes">40</span>
+                            <div class="col-bar-track">
+                                <div class="col-bar red-col" id="colBarPendientes" style="height: 35%"></div>
+                            </div>
+                            <span class="col-label">Pendientes</span>
+                        </div>
+                    </div>
+
+                    <!-- Leyenda Lateral -->
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <span class="legend-dot green"></span>
+                            <span class="legend-text">Completadas: <strong id="legendCompletadas">100</strong></span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot yellow"></span>
+                            <span class="legend-text">En progreso: <strong id="legendProgreso">80</strong></span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot red"></span>
+                            <span class="legend-text">Pendientes: <strong id="legendPendientes">40</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Resumen ejecutivo -->
+            <div class="card reporte-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#f59e0b"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                        Resumen ejecutivo
+                    </div>
+                </div>
+                <div class="resumen-ejecutivo-content">
+                    <div class="resumen-grid">
+                        <div class="resumen-stat-box">
+                            <span class="res-stat-label">Promedio General</span>
+                            <span class="res-stat-val" id="resPromedioGeneral">78.4%</span>
+                        </div>
+                        <div class="resumen-stat-box">
+                            <span class="res-stat-label">Mejor Materia</span>
+                            <span class="res-stat-val purple-text" id="resMejorMateria">S.O. (91%)</span>
+                        </div>
+                        <div class="resumen-stat-box">
+                            <span class="res-stat-label">Menor Rendimiento</span>
+                            <span class="res-stat-val yellow-text" id="resMenorMateria">Redes (62%)</span>
+                        </div>
+                        <div class="resumen-stat-box">
+                            <span class="res-stat-label">Tasa de Cumplimiento</span>
+                            <span class="res-stat-val green-text" id="resTasaCumplimiento">81.8%</span>
+                        </div>
+                    </div>
+                    <p class="resumen-text" id="resumenTexto">
+                        Durante el <strong>Bimestre 1</strong>, el rendimiento general del estudiantado se mantiene favorable con un promedio ponderado de 78.4%. La materia con mayor desempeño es <strong>Sistemas Operativos (91%)</strong>, mientras que <strong>Redes (62%)</strong> requiere un plan de apoyo enfocado en laboratorios prácticos. Se registraron 220 actividades totales, con un nivel de cumplimiento del 81.8%.
+                    </p>
+                </div>
+            </div>
+
+        </section>
+        <!-- ════ CONFIGURACIÓN PAGE ════ -->
+        <section class="page" id="page-configuracion">
+
+            <!-- Header -->
+            <div class="mod-header-row">
+                <div>
+                    <h2 class="mod-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#6b7280"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                        Configuración
+                    </h2>
+                    <p class="mod-sub">Parámetros generales del colegio, seguridad, notificaciones e idioma.</p>
+                </div>
+            </div>
+
+            <!-- Tabs de Navegación -->
+            <div class="config-tabs-nav">
+                <button class="config-tab active" onclick="switchConfigTab('general', this)">General</button>
+                <button class="config-tab" onclick="switchConfigTab('seguridad', this)">Seguridad</button>
+                <button class="config-tab" onclick="switchConfigTab('notificaciones', this)">Notificaciones</button>
+                <button class="config-tab" onclick="switchConfigTab('sistema', this)">Sistema</button>
+            </div>
+
+            <!-- Card Contenedor de Configuración -->
+            <div class="card config-card">
+
+                <!-- ── TAB GENERAL ── -->
+                <div class="config-tab-content active" id="tab-config-general">
+                    <div class="config-section-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                        Información del sistema
+                    </div>
+
+                    <form onsubmit="guardarConfiguracion(event, 'General')">
+                        <div class="form-group config-field">
+                            <label>Nombre del sistema</label>
+                            <input type="text" id="cfgNombreSistema" class="form-control config-input" value="Colegio Germán Busch &quot;A&quot;">
+                        </div>
+
+                        <div class="form-group config-field">
+                            <label>Año académico</label>
+                            <input type="text" id="cfgAnoAcademico" class="form-control config-input" value="2025">
+                        </div>
+
+                        <div class="form-group config-field">
+                            <label>Idioma</label>
+                            <select id="cfgIdioma" class="form-control config-select">
+                                <option value="Español" selected>Español</option>
+                                <option value="English">English</option>
+                                <option value="Português">Português</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group config-field">
+                            <label>Zona horaria</label>
+                            <select id="cfgZonaHoraria" class="form-control config-select">
+                                <option value="America/La_Paz (BOT -4)" selected>America/La_Paz (BOT -4)</option>
+                                <option value="America/Buenos_Aires (ART -3)">America/Buenos_Aires (ART -3)</option>
+                                <option value="America/Bogota (COT -5)">America/Bogota (COT -5)</option>
+                                <option value="America/Mexico_City (CST -6)">America/Mexico_City (CST -6)</option>
+                            </select>
+                        </div>
+
+                        <div class="config-footer-row">
+                            <button type="submit" class="btn-config-save">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+                                </svg>
+                                Guardar cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- ── TAB SEGURIDAD ── -->
+                <div class="config-tab-content" id="tab-config-seguridad">
+                    <div class="config-section-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#3b82f6"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                        Seguridad y control de accesos
+                    </div>
+
+                    <form onsubmit="guardarConfiguracion(event, 'Seguridad')">
+                        <div class="form-group config-field">
+                            <label>Contraseña actual</label>
+                            <input type="password" id="cfgPassActual" class="form-control config-input" placeholder="••••••••">
+                        </div>
+
+                        <div class="form-group config-field">
+                            <label>Nueva contraseña</label>
+                            <input type="password" id="cfgPassNueva" class="form-control config-input" placeholder="••••••••">
+                        </div>
+
+                        <div class="form-group config-field">
+                            <label>Confirmar nueva contraseña</label>
+                            <input type="password" id="cfgPassConfirm" class="form-control config-input" placeholder="••••••••">
+                        </div>
+
+                        <div class="form-group config-switch-row">
+                            <div>
+                                <strong style="color:var(--text-primary); font-size:13px;">Autenticación de dos factores (2FA)</strong>
+                                <p style="color:var(--text-muted); font-size:11px; margin-top:2px;">Solicitar código de verificación al iniciar sesión.</p>
+                            </div>
+                            <label class="switch-toggle">
+                                <input type="checkbox" id="cfg2FA">
+                                <span class="slider-round"></span>
+                            </label>
+                        </div>
+
+                        <div class="config-footer-row">
+                            <button type="submit" class="btn-config-save">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+                                </svg>
+                                Guardar cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- ── TAB NOTIFICACIONES ── -->
+                <div class="config-tab-content" id="tab-config-notificaciones">
+                    <div class="config-section-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#10b981"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                        Preferencias de Notificaciones
+                    </div>
+
+                    <form onsubmit="guardarConfiguracion(event, 'Notificaciones')">
+                        <div class="form-group config-switch-row">
+                            <div>
+                                <strong style="color:var(--text-primary); font-size:13px;">Notificaciones por correo electrónico</strong>
+                                <p style="color:var(--text-muted); font-size:11px; margin-top:2px;">Recibir alertas de actividades y anuncios importantes en el e-mail.</p>
+                            </div>
+                            <label class="switch-toggle">
+                                <input type="checkbox" checked id="cfgNotifEmail">
+                                <span class="slider-round"></span>
+                            </label>
+                        </div>
+
+                        <div class="form-group config-switch-row">
+                            <div>
+                                <strong style="color:var(--text-primary); font-size:13px;">Alertas de calificaciones ingresadas</strong>
+                                <p style="color:var(--text-muted); font-size:11px; margin-top:2px;">Notificar cuando un docente publique nuevas notas.</p>
+                            </div>
+                            <label class="switch-toggle">
+                                <input type="checkbox" checked id="cfgNotifCalificaciones">
+                                <span class="slider-round"></span>
+                            </label>
+                        </div>
+
+                        <div class="form-group config-switch-row">
+                            <div>
+                                <strong style="color:var(--text-primary); font-size:13px;">Recordatorios de eventos en la agenda</strong>
+                                <p style="color:var(--text-muted); font-size:11px; margin-top:2px;">Recibir avisos 24 horas antes de cada evento programado.</p>
+                            </div>
+                            <label class="switch-toggle">
+                                <input type="checkbox" checked id="cfgNotifAgenda">
+                                <span class="slider-round"></span>
+                            </label>
+                        </div>
+
+                        <div class="config-footer-row">
+                            <button type="submit" class="btn-config-save">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+                                </svg>
+                                Guardar cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- ── TAB SISTEMA ── -->
+                <div class="config-tab-content" id="tab-config-sistema">
+                    <div class="config-section-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#8b5cf6"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                        Mantenimiento y estado del servidor
+                    </div>
+
+                    <div class="system-tools-grid">
+                        <div class="system-tool-box">
+                            <div>
+                                <strong style="color:var(--text-primary); font-size:13px;">Copia de Seguridad (Backup)</strong>
+                                <p style="color:var(--text-muted); font-size:11px; margin-top:2px;">Generar y descargar una copia de respaldo completa de la base de datos.</p>
+                            </div>
+                            <button type="button" class="btn-mod-export" onclick="crearBackupSistema()">📦 Crear Backup ahora</button>
+                        </div>
+
+                        <div class="system-tool-box">
+                            <div>
+                                <strong style="color:var(--text-primary); font-size:13px;">Limpieza de Caché</strong>
+                                <p style="color:var(--text-muted); font-size:11px; margin-top:2px;">Vaciar archivos temporales para optimizar la velocidad del sistema.</p>
+                            </div>
+                            <button type="button" class="btn-mod-export" onclick="limpiarCacheSistema()">🧹 Limpiar Caché</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group config-field" style="margin-top:20px;">
+                        <label>Versión del Sistema</label>
+                        <input type="text" class="form-control config-input" value="Sistema Académico v2.4.0 (Build 2026)" readonly style="opacity:0.7;">
+                    </div>
+
+                    <div class="config-footer-row">
+                        <button type="button" class="btn-config-save" onclick="showToast('✅ Cambios del sistema guardados')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+                            </svg>
+                            Guardar cambios
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ════ INSCRIPCIÓN PAGE ════ -->
+        <section class="page" id="page-inscripcion">
+            <!-- ── Encabezado ── -->
+            <div class="insc-page-header">
+                <div class="insc-page-header-left">
+                    <div class="insc-page-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+                            <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-1 5h-2v-2h2v2zm2-4H8v-2h6v2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="insc-page-title">Inscripción</h2>
+                        <p class="insc-page-sub">Gestiona el proceso de inscripción de nuevos estudiantes y cursos.</p>
+                    </div>
+                </div>
+                <button class="insc-btn-nueva" onclick="abrirNuevaInscripcion()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                    Nueva inscripción
+                </button>
+            </div>
+
+            <!-- ── Tabs ── -->
+            <div class="insc-tabs">
+                <button class="insc-tab active" id="insc-tab-resumen"      onclick="switchInscTab('resumen')">Resumen</button>
+                <button class="insc-tab"        id="insc-tab-nuevas"       onclick="switchInscTab('nuevas')">Nuevas inscripciones</button>
+                <button class="insc-tab"        id="insc-tab-pendientes"   onclick="switchInscTab('pendientes')">Inscripciones pendientes</button>
+                <button class="insc-tab"        id="insc-tab-historial"    onclick="switchInscTab('historial')">Historial de inscripciones</button>
+                <button class="insc-tab"        id="insc-tab-configuracion" onclick="switchInscTab('configuracion-insc')">Configuración</button>
+            </div>
+
+            <!-- ── CONTENIDO: Resumen ── -->
+            <div id="insc-content-resumen" class="insc-content">
+
+                <!-- 4 Stat Cards -->
+                <div class="insc-stats-grid">
+                    <div class="insc-stat-card insc-stat-pink">
+                        <div class="insc-stat-icon" style="background:linear-gradient(135deg,#ec4899,#be185d)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
+                        <div class="insc-stat-info">
+                            <span class="insc-stat-label">Nuevas inscripciones</span>
+                            <span class="insc-stat-value" id="insc-stat-nuevas">32</span>
+                            <span class="insc-stat-change positive">+12% vs. mes anterior</span>
+                        </div>
+                        <svg class="insc-stat-wave" viewBox="0 0 100 40" preserveAspectRatio="none">
+                            <polyline points="0,35 15,28 30,32 45,20 60,25 75,15 90,18 100,10" fill="none" stroke="rgba(236,72,153,0.5)" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="insc-stat-card insc-stat-orange">
+                        <div class="insc-stat-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                        </div>
+                        <div class="insc-stat-info">
+                            <span class="insc-stat-label">Pendientes de revisión</span>
+                            <span class="insc-stat-value" id="insc-stat-pendientes">8</span>
+                            <span class="insc-stat-change warn">Requieren aprobación</span>
+                        </div>
+                        <svg class="insc-stat-wave" viewBox="0 0 100 40" preserveAspectRatio="none">
+                            <polyline points="0,38 15,32 30,36 45,22 60,30 75,18 90,24 100,14" fill="none" stroke="rgba(245,158,11,0.5)" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="insc-stat-card insc-stat-green">
+                        <div class="insc-stat-icon" style="background:linear-gradient(135deg,#10b981,#059669)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                        </div>
+                        <div class="insc-stat-info">
+                            <span class="insc-stat-label">Inscripciones aprobadas</span>
+                            <span class="insc-stat-value" id="insc-stat-aprobadas">18</span>
+                            <span class="insc-stat-change positive">Este mes</span>
+                        </div>
+                        <svg class="insc-stat-wave" viewBox="0 0 100 40" preserveAspectRatio="none">
+                            <polyline points="0,30 15,24 30,28 45,16 60,20 75,10 90,14 100,6" fill="none" stroke="rgba(16,185,129,0.5)" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="insc-stat-card insc-stat-red">
+                        <div class="insc-stat-icon" style="background:linear-gradient(135deg,#ef4444,#b91c1c)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg>
+                        </div>
+                        <div class="insc-stat-info">
+                            <span class="insc-stat-label">Inscripciones rechazadas</span>
+                            <span class="insc-stat-value" id="insc-stat-rechazadas">6</span>
+                            <span class="insc-stat-change danger">Este mes</span>
+                        </div>
+                        <svg class="insc-stat-wave" viewBox="0 0 100 40" preserveAspectRatio="none">
+                            <polyline points="0,32 15,26 30,30 45,20 60,28 75,18 90,22 100,14" fill="none" stroke="rgba(239,68,68,0.5)" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Tabla + Proceso (dos columnas) -->
+                <div class="insc-mid-grid">
+                    <!-- Tabla de inscripciones recientes -->
+                    <div class="card" style="padding:0;overflow:hidden">
+                        <div class="card-header" style="padding:18px 20px 14px">
+                            <div class="card-title">Nuevas inscripciones recientes</div>
+                            <a href="#" class="card-link" onclick="switchInscTab('nuevas');return false;">Ver todas</a>
+                        </div>
+                        <div class="insc-table-wrap">
+                            <table class="insc-table">
+                                <thead>
+                                    <tr>
+                                        <th>ESTUDIANTE</th>
+                                        <th>CURSO / GRADO</th>
+                                        <th>FECHA DE SOLICITUD</th>
+                                        <th>ESTADO</th>
+                                        <th>ACCIONES</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="insc-tbody-recientes"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Proceso de inscripción -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Proceso de inscripción</div>
+                        </div>
+                        <div class="insc-proceso-list">
+                            <div class="insc-proceso-step">
+                                <div class="insc-proceso-num" style="background:linear-gradient(135deg,#db2777,#ec4899)">1</div>
+                                <div class="insc-proceso-icon-box" style="background:rgba(236,72,153,0.12)">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#ec4899"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                                </div>
+                                <div class="insc-proceso-info">
+                                    <strong>Solicitud de inscripción</strong>
+                                    <p>El tutor completa el formulario con los datos del estudiante y selecciona el curso.</p>
+                                </div>
+                            </div>
+                            <div class="insc-proceso-connector"></div>
+                            <div class="insc-proceso-step">
+                                <div class="insc-proceso-num" style="background:linear-gradient(135deg,#2563eb,#3b82f6)">2</div>
+                                <div class="insc-proceso-icon-box" style="background:rgba(59,130,246,0.12)">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#3b82f6"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S14.93 13 13 13s-3.5-1.57-3.5-3.5S11.07 7 13 7zm-8 9v-1c0-1.33 2.67-2 4-2h.14C8.5 14.56 8 15.23 8 16v2H5v-2zm14 2h-8v-2c0-1.33 2.67-2 4-2s4 .67 4 2v2z"/></svg>
+                                </div>
+                                <div class="insc-proceso-info">
+                                    <strong>Revisión de documentos</strong>
+                                    <p>El administrador revisa y valida la documentación requerida.</p>
+                                </div>
+                            </div>
+                            <div class="insc-proceso-connector"></div>
+                            <div class="insc-proceso-step">
+                                <div class="insc-proceso-num" style="background:linear-gradient(135deg,#d97706,#f59e0b)">3</div>
+                                <div class="insc-proceso-icon-box" style="background:rgba(245,158,11,0.12)">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                </div>
+                                <div class="insc-proceso-info">
+                                    <strong>Aprobación</strong>
+                                    <p>Se aprueba la inscripción y se asigna al curso correspondiente.</p>
+                                </div>
+                            </div>
+                            <div class="insc-proceso-connector"></div>
+                            <div class="insc-proceso-step">
+                                <div class="insc-proceso-num" style="background:linear-gradient(135deg,#059669,#10b981)">4</div>
+                                <div class="insc-proceso-icon-box" style="background:rgba(16,185,129,0.12)">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#10b981"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                                </div>
+                                <div class="insc-proceso-info">
+                                    <strong>Confirmación</strong>
+                                    <p>El tutor recibe la confirmación y el estudiante queda inscrito.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom grid: Estadísticas + Barras + Documentos -->
+                <div class="insc-bottom-grid">
+                    <!-- Estadísticas donut -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Estadísticas de inscripciones</div>
+                            <span class="insc-period-badge">Este mes ▾</span>
+                        </div>
+                        <div class="insc-donut-wrap">
+                            <div class="insc-donut-chart">
+                                <svg viewBox="0 0 120 120" width="130" height="130">
+                                    <circle cx="60" cy="60" r="46" fill="none" stroke="#1a253a" stroke-width="18"/>
+                                    <!-- Aprobadas 56% -->
+                                    <circle cx="60" cy="60" r="46" fill="none" stroke="#10b981" stroke-width="18"
+                                        stroke-dasharray="162 289" stroke-dashoffset="289" class="insc-donut-seg seg-aprobadas"/>
+                                    <!-- Pendientes 25% -->
+                                    <circle cx="60" cy="60" r="46" fill="none" stroke="#f59e0b" stroke-width="18"
+                                        stroke-dasharray="72 289" stroke-dashoffset="127" class="insc-donut-seg seg-pendientes"/>
+                                    <!-- Rechazadas 19% -->
+                                    <circle cx="60" cy="60" r="46" fill="none" stroke="#ef4444" stroke-width="18"
+                                        stroke-dasharray="55 289" stroke-dashoffset="55" class="insc-donut-seg seg-rechazadas"/>
+                                    <text x="60" y="55" text-anchor="middle" fill="var(--text-muted)" font-size="9" font-family="Inter">Total</text>
+                                    <text x="60" y="72" text-anchor="middle" fill="var(--text-primary)" font-size="16" font-weight="bold" font-family="Inter">32</text>
+                                </svg>
+                            </div>
+                            <div class="insc-donut-legend">
+                                <div class="insc-legend-item">
+                                    <span class="insc-legend-dot" style="background:#10b981"></span>
+                                    <span class="insc-legend-label">Aprobadas</span>
+                                    <span class="insc-legend-val">18 (56%)</span>
+                                </div>
+                                <div class="insc-legend-item">
+                                    <span class="insc-legend-dot" style="background:#f59e0b"></span>
+                                    <span class="insc-legend-label">Pendientes</span>
+                                    <span class="insc-legend-val">8 (25%)</span>
+                                </div>
+                                <div class="insc-legend-item">
+                                    <span class="insc-legend-dot" style="background:#ef4444"></span>
+                                    <span class="insc-legend-label">Rechazadas</span>
+                                    <span class="insc-legend-val">6 (19%)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Barras por nivel -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Inscripciones por nivel</div>
+                            <span class="insc-period-badge">Este mes ▾</span>
+                        </div>
+                        <div class="insc-bar-chart">
+                            <div class="insc-bar-y-axis">
+                                <span>20</span><span>10</span><span>0</span>
+                            </div>
+                            <div class="insc-bars">
+                                <div class="insc-bar-col">
+                                    <div class="insc-bar-wrap"><div class="insc-bar" style="height:25%;background:#ec4899" title="Inicial: 5"></div></div>
+                                    <span class="insc-bar-val">5</span>
+                                    <span class="insc-bar-label">Inicial</span>
+                                </div>
+                                <div class="insc-bar-col">
+                                    <div class="insc-bar-wrap"><div class="insc-bar" style="height:60%;background:#3b82f6" title="Primaria: 12"></div></div>
+                                    <span class="insc-bar-val">12</span>
+                                    <span class="insc-bar-label">Primaria</span>
+                                </div>
+                                <div class="insc-bar-col">
+                                    <div class="insc-bar-wrap"><div class="insc-bar" style="height:50%;background:#10b981" title="Secundaria: 10"></div></div>
+                                    <span class="insc-bar-val">10</span>
+                                    <span class="insc-bar-label">Secundaria</span>
+                                </div>
+                                <div class="insc-bar-col">
+                                    <div class="insc-bar-wrap"><div class="insc-bar" style="height:25%;background:#f59e0b" title="Otros: 5"></div></div>
+                                    <span class="insc-bar-val">5</span>
+                                    <span class="insc-bar-label">Otros</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Documentos requeridos -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Documentos requeridos</div>
+                            <a href="#" class="card-link">Ver todos</a>
+                        </div>
+                        <div class="insc-docs-list">
+                            <div class="insc-doc-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="#10b981"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><span>Certificado de nacimiento</span></div>
+                            <div class="insc-doc-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="#10b981"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><span>Fotocopia de carnet del tutor</span></div>
+                            <div class="insc-doc-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="#10b981"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><span>Boleta de calificaciones (último año)</span></div>
+                    <div class="insc-doc-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="#10b981"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><span>Fotografía tamaño 3x3</span></div>
+                            <div class="insc-doc-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="#10b981"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><span>Formulario de inscripción</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ SECCIÓN VINCULADA: Estudiantes matriculados ═══ -->
+                <div class="card" style="margin-top:20px;padding:0;overflow:hidden">
+                    <div class="card-header" style="padding:18px 20px 14px;border-bottom:1px solid var(--border)">
+                        <div class="card-title" style="display:flex;align-items:center;gap:8px">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 11-6-11-6z"/></svg>
+                            Estudiantes matriculados
+                            <span style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-left:4px">VINCULADO</span>
+                        </div>
+                        <span style="font-size:11px;color:var(--text-muted)">Datos en tiempo real del módulo Estudiantes</span>
+                    </div>
+                    <div style="padding:16px 20px 20px">
+                        <div id="insc-estudiantes-vinculados">
+                            <!-- Contenido generado por renderEstudiantesVinculados() -->
+                            <div style="text-align:center;padding:30px;color:var(--text-muted)">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.3;margin-bottom:8px"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg>
+                                <p style="font-size:12px">Cargando datos vinculados...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /insc-content-resumen -->
+
+            <!-- ── CONTENIDO: Nuevas inscripciones ── -->
+            <div id="insc-content-nuevas" class="insc-content" style="display:none">
+                <div class="mod-filter-bar">
+                    <div class="mod-search">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                        <input type="text" id="searchInscNuevas" placeholder="Buscar inscripción..." oninput="renderInscTabla('nuevas')">
+                    </div>
+                    <select class="agenda-filter-select" id="filterInscNuevaNivel" onchange="renderInscTabla('nuevas')">
+                        <option value="">Todos los niveles</option>
+                        <option>Secundaria</option>
+                    </select>
+                </div>
+                <div class="mod-table-wrap">
+                    <table class="mod-table">
+                        <thead><tr><th>#</th><th>Estudiante</th><th>Curso / Grado</th><th>Fecha Solicitud</th><th>Tutor</th><th>Estado</th><th>Acciones</th></tr></thead>
+                        <tbody id="tbody-inscripciones"></tbody>
+                    </table>
+                    <div class="mod-pagination"><span id="info-inscripciones" class="pagination-info"></span></div>
+                </div>
+            </div>
+
+            <!-- ── CONTENIDO: Pendientes ── -->
+            <div id="insc-content-pendientes" class="insc-content" style="display:none">
+                <div class="mod-filter-bar">
+                    <div class="mod-search">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                        <input type="text" id="searchInscPendientes" placeholder="Buscar pendiente..." oninput="renderInscPendientes()">
+                    </div>
+                </div>
+                <div id="insc-pendientes-list" class="insc-pendientes-list"></div>
+            </div>
+
+            <!-- ── CONTENIDO: Historial ── -->
+            <div id="insc-content-historial" class="insc-content" style="display:none">
+                <div class="mod-filter-bar">
+                    <div class="mod-search">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                        <input type="text" id="searchInscHistorial" placeholder="Buscar en historial..." oninput="renderInscHistorial()">
+                    </div>
+                    <select class="agenda-filter-select" id="filterInscHistorialEstado" onchange="renderInscHistorial()">
+                        <option value="">Todos los estados</option>
+                        <option>Aprobada</option><option>Pendiente</option><option>Rechazada</option>
+                    </select>
+                </div>
+                <div class="mod-table-wrap">
+                    <table class="mod-table">
+                        <thead><tr><th>#</th><th>Estudiante</th><th>Curso</th><th>Fecha</th><th>Estado</th><th>Revisado por</th><th>Acciones</th></tr></thead>
+                        <tbody id="tbody-insc-historial"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ── CONTENIDO: Configuración inscripción ── -->
+            <div id="insc-content-configuracion-insc" class="insc-content" style="display:none">
+                <div class="card" style="max-width:640px">
+                    <div class="card-header"><div class="card-title">⚙️ Configuración del proceso de inscripción</div></div>
+                    <div style="padding:0 20px 20px;display:flex;flex-direction:column;gap:14px;">
+                        <div class="form-group">
+                            <label>Período de inscripción activo</label>
+                            <input type="text" class="form-control" value="Gestión 2025 — Segundo Semestre">
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha límite de inscripción</label>
+                            <input type="date" class="form-control" value="2025-06-30">
+                        </div>
+                        <div class="form-group">
+                            <label>Cupos máximos por grado</label>
+                            <input type="number" class="form-control" value="35">
+                        </div>
+                        <div class="form-group">
+                            <label>Documentos requeridos (uno por línea)</label>
+                            <textarea class="form-control" rows="5">Certificado de nacimiento
+Fotocopia de carnet del tutor
+Boleta de calificaciones (último año)
+Fotografía tamaño 3x3
+Formulario de inscripción</textarea>
+                        </div>
+                        <button class="btn-modal-save" style="align-self:flex-start" onclick="showToast('✅ Configuración de inscripción guardada')">Guardar cambios</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- MODAL NUEVA INSCRIPCIÓN -->
+<div class="modal-backdrop" id="modal-backdrop-inscripcion" onclick="closeModal('inscripcion')"></div>
+<div class="modal-evento" id="modal-inscripcion" style="max-width:560px">
+    <div class="modal-evento-header">
+        <h3 id="modal-inscripcion-title">Nueva Inscripción</h3>
+        <button class="modal-close" onclick="closeModal('inscripcion')">✕</button>
+    </div>
+    <div class="modal-evento-body">
+        <input type="hidden" id="insc-id">
+        <div class="form-row-2">
+            <!-- ── Autocomplete Nombre Estudiante ── -->
+            <div class="form-group" style="position:relative">
+                <label>NOMBRE DEL ESTUDIANTE *</label>
+                <div class="insc-autocomplete-wrap">
+                    <input type="text" id="insc-nombre" class="form-control" placeholder="Buscar estudiante registrado..."
+                           autocomplete="off"
+                           oninput="filtrarEstudiantesAutoComplete(this.value)"
+                           onfocus="filtrarEstudiantesAutoComplete(this.value)"
+                           onblur="setTimeout(()=>{ if(!_acPreventBlur) cerrarAutoComplete(); },150)">
+                    <span class="insc-ac-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    </span>
+                    <div class="insc-autocomplete-list" id="insc-autocomplete-list"></div>
+                </div>
+            </div>
+            <div class="form-group"><label>CI DEL ESTUDIANTE *</label><input type="text" id="insc-ci" class="form-control" placeholder="12345678" readonly style="background:rgba(255,255,255,0.04);cursor:not-allowed;opacity:0.8"></div>
+        </div>
+        <div class="form-row-2">
+            <div class="form-group"><label>CURSO / GRADO *</label>
+                <select id="insc-curso" class="form-control">
+                    <option>1° de Secundaria</option>
+                    <option>2° de Secundaria</option>
+                    <option>3° de Secundaria</option>
+                    <option>4° de Secundaria</option>
+                    <option>5° de Secundaria</option>
+                    <option>6° de Secundaria</option>
+                </select>
+            </div>
+            <div class="form-group"><label>GESTIÓN</label><input type="text" id="insc-gestion" class="form-control" placeholder="Gestión 2025"></div>
+        </div>
+        <div class="form-group">
+            <label>ASIGNATURA *</label>
+            <select id="insc-asignatura" class="form-control">
+                <option value="">Seleccionar asignatura...</option>
+                <option>Comunicación y Lenguaje</option>
+                <option>Matemáticas</option>
+                <option>Ciencias Naturales</option>
+                <option>Ciencias Sociales</option>
+                <option>Educación Física</option>
+                <option>Educación Musical</option>
+                <option>Artes Plásticas</option>
+                <option>Inglés</option>
+                <option>Informática</option>
+                <option>Física</option>
+                <option>Química</option>
+                <option>Biología</option>
+                <option>Historia</option>
+                <option>Geografía</option>
+                <option>Filosofía</option>
+                <option>Trigonometría</option>
+                <option>Programación</option>
+                <option>Redes de Computadoras</option>
+            </select>
+        </div>
+        <div class="form-row-2">
+            <div class="form-group"><label>NOMBRE DEL TUTOR *</label><input type="text" id="insc-tutor" class="form-control" placeholder="Nombre del tutor"></div>
+            <div class="form-group"><label>TELÉFONO DEL TUTOR</label><input type="text" id="insc-tutor-tel" class="form-control" placeholder="+591 7xxxxxxx"></div>
+        </div>
+        <div class="form-group"><label>ESTADO</label>
+            <select id="insc-estado" class="form-control">
+                <option>Pendiente</option><option>Aprobada</option><option>Rechazada</option>
+            </select>
+        </div>
+        <div class="form-group"><label>OBSERVACIONES</label><textarea id="insc-obs" class="form-control" rows="2" placeholder="Notas adicionales..."></textarea></div>
+    </div>
+    <div class="modal-evento-footer">
+        <button class="btn-modal-cancel" onclick="closeModal('inscripcion')">Cancelar</button>
+        <button class="btn-modal-save" onclick="guardarInscripcion()">Guardar inscripción</button>
+    </div>
+</div>
+
+
+<!-- TOAST NOTIFICATION -->
+<div class="toast" id="toast"></div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeAllDropdowns()"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

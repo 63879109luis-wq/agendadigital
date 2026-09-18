@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión — Panel Administrativo | Colegio Germán Busch "A"</title>
+    <meta name="description" content="Acceso al panel administrativo del Sistema Académico del Colegio Germán Busch A.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        a { text-decoration: none; color: inherit; }
+        button { cursor: pointer; border: none; background: none; font-family: inherit; }
+        input  { font-family: inherit; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #020818;
+        }
+
+        /* ── Canvas full-screen ── */
+        #bgCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+        }
+
+        /* ── Login wrap ── */
+        .login-wrap {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 430px;
+            background: rgba(4, 10, 28, 0.92);
+            border: 1px solid rgba(59,130,246,0.3);
+            border-radius: 22px;
+            padding: 38px 34px;
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            box-shadow:
+                0 40px 100px rgba(0,0,0,0.8),
+                0 0 0 1px rgba(255,255,255,0.04),
+                inset 0 1px 0 rgba(255,255,255,0.07),
+                0 0 80px rgba(29,78,216,0.12),
+                0 0 200px rgba(59,130,246,0.06);
+            position: relative;
+            overflow: hidden;
+            pointer-events: all;
+            animation: cardIn 0.7s cubic-bezier(0.34,1.56,0.64,1);
+        }
+
+        @keyframes cardIn {
+            from { opacity:0; transform: translateY(40px) scale(0.91); }
+            to   { opacity:1; transform: translateY(0) scale(1); }
+        }
+
+        /* Top glow line */
+        .login-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 12%; right: 12%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(99,179,237,0.8), rgba(59,130,246,1), rgba(99,179,237,0.8), transparent);
+        }
+        /* Dot pattern */
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 15px; right: 18px;
+            width: 96px; height: 56px;
+            background-image: radial-gradient(rgba(255,255,255,0.08) 1.5px, transparent 1.5px);
+            background-size: 9px 9px;
+            pointer-events: none;
+        }
+
+        /* ── Brand ── */
+        .brand { display:flex; align-items:center; gap:13px; margin-bottom:26px; }
+        .flag  { display:flex; width:30px; height:38px; border-radius:5px; overflow:hidden; box-shadow:0 3px 12px rgba(0,0,0,0.5); flex-shrink:0; }
+        .flag-y { width:50%; background:#f59e0b; }
+        .flag-b { width:50%; background:#1d4ed8; }
+        .brand-txt { display:flex; flex-direction:column; line-height:1.25; }
+        .brand-name { font-size:11.5px; font-weight:800; color:#e2e8f0; letter-spacing:.7px; text-transform:uppercase; }
+        .brand-sub  { font-size:9.5px; color:#4d6a8f; }
+
+        /* ── Title ── */
+        .ttl   { margin-bottom:26px; }
+        .ttl h1 { font-size:25px; font-weight:700; color:#fff; letter-spacing:-.5px; margin-bottom:5px; }
+        .ttl p  { font-size:13px; color:#6b8ab0; }
+
+        /* ── Form ── */
+        .fg  { margin-bottom:16px; }
+        .lbl { font-size:10.5px; font-weight:600; color:#7c9cbd; letter-spacing:.4px; text-transform:uppercase; margin-bottom:6px; display:block; }
+        .iw  { position:relative; }
+        .iw input {
+            width:100%; height:47px;
+            background:rgba(248,250,252,0.97);
+            color:#0f172a;
+            border:1.5px solid #dde4ee;
+            border-radius:12px;
+            padding:0 44px;
+            font-size:14px; font-weight:500;
+            outline:none; transition:all .22s;
+            font-family:'Inter',sans-serif;
+        }
+        .iw input:focus { border-color:#3b82f6; background:#fff; box-shadow:0 0 0 3px rgba(59,130,246,.2); }
+        .iw input::placeholder { color:#94a3b8; font-weight:400; }
+        .il { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#94a3b8; pointer-events:none; display:flex; }
+        .ir { position:absolute; right:10px; top:50%; transform:translateY(-50%); color:#94a3b8; cursor:pointer; padding:5px; border-radius:5px; display:flex; transition:color .2s; }
+        .ir:hover { color:#3b82f6; }
+
+        .opts { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+        .chk  { display:flex; align-items:center; gap:7px; font-size:12px; color:#7c9cbd; cursor:pointer; }
+        .chk input { accent-color:#3b82f6; }
+        .fgt  { font-size:12px; color:#3b82f6; font-weight:500; transition:color .2s; }
+        .fgt:hover { color:#60a5fa; text-decoration:underline; }
+
+        /* Error */
+        .err { display:none; align-items:center; gap:8px; background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.28); border-radius:10px; padding:10px 13px; margin-bottom:14px; font-size:12px; color:#fca5a5; animation:shake .35s; }
+        .err.show { display:flex; }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%,75%{transform:translateX(-5px)} 50%{transform:translateX(5px)} }
+
+        /* Buttons */
+        .btn-p { width:100%; height:47px; background:linear-gradient(135deg,#1d4ed8,#3b82f6,#60a5fa); background-size:200% 100%; background-position:0% 50%; color:white; border-radius:12px; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:9px; cursor:pointer; transition:all .28s ease; box-shadow:0 6px 24px rgba(29,78,216,.42); font-family:'Inter',sans-serif; }
+        .btn-p:hover { background-position:100% 50%; box-shadow:0 10px 32px rgba(29,78,216,.58); transform:translateY(-2px); }
+        .btn-p:active { transform:none; }
+        .btn-p:disabled { opacity:.7; cursor:not-allowed; transform:none; }
+
+        .sp { display:none; width:16px; height:16px; border:2px solid rgba(255,255,255,.3); border-top-color:white; border-radius:50%; animation:spin .65s linear infinite; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+
+        .dvd { position:relative; text-align:center; margin:18px 0; }
+        .dvd::before { content:''; position:absolute; top:50%; left:0; right:0; height:1px; background:rgba(255,255,255,.07); }
+        .dvd-dot { position:relative; display:inline-block; width:7px; height:7px; background:#f59e0b; border-radius:50%; box-shadow:0 0 10px rgba(245,158,11,.7); animation:pdot 2s ease-in-out infinite; }
+        @keyframes pdot { 0%,100%{box-shadow:0 0 8px rgba(245,158,11,.6)} 50%{box-shadow:0 0 18px rgba(245,158,11,1),0 0 30px rgba(245,158,11,.4)} }
+
+        .btn-a { width:100%; height:45px; background:rgba(255,255,255,.03); color:#7c9cbd; border:1px solid rgba(255,255,255,.09); border-radius:12px; font-size:13px; font-weight:500; display:flex; align-items:center; justify-content:center; gap:9px; cursor:pointer; transition:all .2s; font-family:'Inter',sans-serif; }
+        .btn-a:hover { background:rgba(59,130,246,.08); border-color:rgba(59,130,246,.3); color:#7dd3fc; transform:translateY(-1px); }
+
+        .foot { text-align:center; font-size:10px; color:#1e3a5f; margin-top:22px; }
+
+        @media (max-width:480px) { .login-card { padding:26px 20px; } .ttl h1 { font-size:22px; } }
+
+        /* scene label */
+        .scene-label {
+            position: fixed;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            font-size: 11px;
+            color: rgba(99,155,210,0.45);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-family: 'Inter', sans-serif;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<div class="login-wrap">
+    <div class="login-card">
+
+        <div class="brand">
+            <div class="flag"><div class="flag-y"></div><div class="flag-b"></div></div>
+            <div class="brand-txt">
+                <span class="brand-name">Colegio Germán Busch "A"</span>
+                <span class="brand-sub">Sistema Académico · Panel Administrativo</span>
+            </div>
+        </div>
+
+        <div class="ttl">
+            <h1>Iniciar sesión</h1>
+            <p>Accede con tu cuenta para continuar</p>
+        </div>
+
+        <div class="err" id="err">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span id="errMsg"></span>
+        </div>
+
+        <form id="loginForm" onsubmit="doLogin(event)" novalidate>
+            <div class="fg">
+                <label class="lbl" for="email">Correo electrónico</label>
+                <div class="iw">
+                    <span class="il"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+                    <input type="email" id="email" placeholder="admin@sistema.edu" autocomplete="email" required>
+                </div>
+            </div>
+
+            <div class="fg">
+                <label class="lbl" for="password">Contraseña</label>
+                <div class="iw">
+                    <span class="il"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+                    <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required>
+                    <button type="button" class="ir" onclick="togglePass()">
+                        <svg id="eOff" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22"/></svg>
+                        <svg id="eOn" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="opts">
+                <label class="chk">
+                    <input type="checkbox" id="rem" checked>
+                    <span>Recordarme</span>
+                </label>
+                <a href="#" class="fgt" onclick="alert('Contacta al administrador.'); return false;">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <button type="submit" class="btn-p" id="subBtn">
+                <div class="sp" id="sp"></div>
+                <svg id="subIco" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                <span id="subTxt">Iniciar sesión</span>
+            </button>
+        </form>
+
+        <div class="dvd"><span class="dvd-dot"></span></div>
+
+        <button type="button" class="btn-a" onclick="quickAccess()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Acceso rápido como administrador
+        </button>
+
+        <p class="foot">© 2026 Sistema Académico · Colegio Germán Busch "A" · Solo acceso autorizado</p>
+    </div>
+</div>
+
+<div class="scene-label">Colegio Germán Busch · Campus</div>
+
+<script>
+'use strict';
+
+// ════════════════════════════════════════════════════════════════════════
+//  ENHANCED 3D CANVAS ANIMATION — Detailed Walking Figures + Full Scene
+// ════════════════════════════════════════════════════════════════════════
+const canvas = document.getElementById('bgCanvas');
+const cx     = canvas.getContext('2d');
+let W = 0, H = 0, tick = 0;
+
+function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', () => { resize(); rebuildScene(); });
+resize();
+
+// ── UTILITY ──────────────────────────────────────────────────────────────
+function rnd(a, b)      { return a + Math.random() * (b - a); }
+function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+function lerp(a, b, t)  { return a + (b - a) * t; }
+
+// ── PARTICLE SYSTEM (Stars/dust) ──────────────────────────────────────────
+class Star {
+    constructor() { this.reset(true); }
+    reset(init) {
+        this.x   = rnd(0, W);
+        this.y   = rnd(0, init ? H : -10);
+        this.r   = rnd(0.3, 1.6);
+        this.opa = rnd(0.05, 0.5);
+        this.vy  = rnd(0.03, 0.12);
+        this.twinklePhase = rnd(0, Math.PI * 2);
+        this.twinkleSpd   = rnd(0.015, 0.045);
+    }
+    update() {
+        this.y += this.vy;
+        this.twinklePhase += this.twinkleSpd;
+        if (this.y > H * 0.65) this.reset(false);
+    }
+    draw() {
+        const o = this.opa * (0.6 + 0.4 * Math.sin(this.twinklePhase));
+        cx.beginPath();
+        cx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        cx.fillStyle = `rgba(180,210,255,${o})`;
+        cx.fill();
+    }
+}
+
+// ── 3D BUBBLE CLASS ──────────────────────────────────────────────────────
+class Bubble {
+    constructor(scattered) { this._spawn(scattered); }
+    _spawn(scattered) {
+        this.r   = rnd(6, 60);
+        this.x   = rnd(this.r, Math.max(W - this.r, this.r + 1));
+        this.y   = scattered ? rnd(-this.r, H * 0.7) : H * 0.5 + rnd(this.r, this.r + 200);
+        this.vy  = -rnd(0.1, 0.5);
+        this.wp  = rnd(0, Math.PI * 2);
+        this.wf  = rnd(0.005, 0.016);
+        this.wa  = rnd(0.25, 1.0);
+        const blue = Math.random() > 0.3;
+        this.hue = blue ? rnd(195, 250) : rnd(30, 55);
+        this.sat = rnd(50, 90);
+        this.opa = rnd(0.03, 0.18);
+    }
+    update() {
+        this.y  += this.vy;
+        this.wp += this.wf;
+        this.x  += Math.sin(this.wp) * this.wa;
+        if (this.y + this.r < 0) this._spawn(false);
+    }
+    draw() {
+        const { x, y, r, hue, sat, opa } = this;
+        const g = cx.createRadialGradient(x - r*.34, y - r*.37, r*.04, x, y, r);
+        g.addColorStop(0,    `hsla(${hue+20},${sat+14}%,92%,${opa*1.6})`);
+        g.addColorStop(0.44, `hsla(${hue},   ${sat}%,  58%,${opa})`);
+        g.addColorStop(1,    `hsla(${hue-12},${sat-9}%,14%,${opa*0.14})`);
+        cx.save();
+        cx.beginPath(); cx.arc(x, y, r, 0, Math.PI * 2);
+        cx.fillStyle = g; cx.fill();
+        const hl = cx.createRadialGradient(x-r*.33, y-r*.34, 0, x-r*.26, y-r*.26, r*.5);
+        hl.addColorStop(0,   `rgba(255,255,255,${opa*1.5})`);
+        hl.addColorStop(0.5, `rgba(255,255,255,${opa*0.3})`);
+        hl.addColorStop(1,   `rgba(255,255,255,0)`);
+        cx.beginPath(); cx.arc(x, y, r, 0, Math.PI * 2);
+        cx.fillStyle = hl; cx.fill();
+        cx.strokeStyle = `hsla(${hue},${sat}%,72%,${opa*0.38})`;
+        cx.lineWidth = 0.5;
+        cx.beginPath(); cx.arc(x, y, r, 0, Math.PI * 2); cx.stroke();
+        cx.restore();
+    }
+}
+
+// ── BUILDING RENDERER (background) ──────────────────────────────────────
+function drawBuildings() {
+    const gY = H - 14;
+    // Building configs: [x%, width%, height_vh, windows_x, windows_y, color]
+    const blds = [
+        { x:0.02, w:0.08, h:0.35, wx:3, wy:5, c:'#0b1630' },
+        { x:0.11, w:0.06, h:0.25, wx:2, wy:4, c:'#0a1428' },
+        { x:0.76, w:0.09, h:0.38, wx:3, wy:6, c:'#0b1630' },
+        { x:0.86, w:0.07, h:0.28, wx:2, wy:4, c:'#0a1428' },
+        { x:0.93, w:0.07, h:0.22, wx:2, wy:3, c:'#091220' },
+    ];
+    for (const b of blds) {
+        const bx = W * b.x;
+        const bw = W * b.w;
+        const bh = H * b.h;
+        const by = gY - bh;
+        // Building body
+        const bg = cx.createLinearGradient(bx, by, bx + bw, by + bh);
+        bg.addColorStop(0, b.c);
+        bg.addColorStop(1, '#050c1e');
+        cx.fillStyle = bg;
+        cx.fillRect(bx, by, bw, bh);
+        // Roof accent
+        cx.fillStyle = 'rgba(59,130,246,0.18)';
+        cx.fillRect(bx, by, bw, 3);
+        // Windows
+        const ww = bw / (b.wx * 2 + 1);
+        const wh = bh / (b.wy * 2 + 1);
+        for (let wy = 0; wy < b.wy; wy++) {
+            for (let wx = 0; wx < b.wx; wx++) {
+                const wxp = bx + ww * (wx * 2 + 1);
+                const wyp = by + wh * (wy * 2 + 1);
+                const lit = Math.random() > 0.35;
+                const windowColor = lit
+                    ? `rgba(${180+Math.floor(Math.random()*40)},${200+Math.floor(Math.random()*30)},${80+Math.floor(Math.random()*120)},0.65)`
+                    : 'rgba(10,20,50,0.8)';
+                cx.fillStyle = windowColor;
+                cx.fillRect(wxp, wyp, ww * 0.7, wh * 0.65);
+                if (lit) {
+                    const wg = cx.createRadialGradient(wxp + ww*.35, wyp + wh*.32, 0, wxp + ww*.35, wyp + wh*.32, ww*.7);
+                    wg.addColorStop(0, 'rgba(255,240,150,0.12)');
+                    wg.addColorStop(1, 'rgba(255,240,150,0)');
+                    cx.fillStyle = wg;
+                    cx.fillRect(wxp - ww*.5, wyp - wh*.5, ww*2, wh*2);
+                }
+            }
+        }
+    }
+}
+
+// ── TREE RENDERER ───────────────────────────────────────────────────────
+function drawTree(x, y, scale, alpha) {
+    cx.save();
+    cx.globalAlpha = alpha;
+    cx.translate(x, y);
+    cx.scale(scale, scale);
+    // Trunk
+    cx.fillStyle = '#3d2b1f';
+    cx.fillRect(-4, -18, 8, 22);
+    // Foliage layers
+    const layers = [
+        { oy:-52, r:26, c:'#0d4a2a' },
+        { oy:-40, r:22, c:'#0f5c34' },
+        { oy:-30, r:18, c:'#12703f' },
+        { oy:-20, r:14, c:'#178a4d' },
+    ];
+    for (const l of layers) {
+        cx.fillStyle = l.c;
+        cx.beginPath();
+        cx.arc(0, l.oy, l.r, 0, Math.PI * 2);
+        cx.fill();
+        // Highlight
+        cx.fillStyle = 'rgba(180,255,180,0.04)';
+        cx.beginPath();
+        cx.arc(-l.r*.2, l.oy - l.r*.2, l.r*.4, 0, Math.PI * 2);
+        cx.fill();
+    }
+    cx.restore();
+}
+
+// ── LAMP POST ────────────────────────────────────────────────────────────
+function drawLamp(x, y, scale, alpha) {
+    cx.save();
+    cx.globalAlpha = alpha;
+    cx.translate(x, y);
+    cx.scale(scale, scale);
+    // Post
+    cx.strokeStyle = '#334155';
+    cx.lineWidth = 3;
+    cx.beginPath();
+    cx.moveTo(0, 0);
+    cx.lineTo(0, -65);
+    cx.lineTo(12, -72);
+    cx.stroke();
+    // Lamp head
+    cx.fillStyle = '#1e293b';
+    cx.beginPath();
+    cx.ellipse(12, -72, 8, 4, 0, 0, Math.PI * 2);
+    cx.fill();
+    // Glow halo
+    const lg = cx.createRadialGradient(12, -72, 0, 12, -72, 30);
+    lg.addColorStop(0, 'rgba(255,240,160,0.22)');
+    lg.addColorStop(0.5,'rgba(255,220,100,0.06)');
+    lg.addColorStop(1, 'rgba(255,200,50,0)');
+    cx.fillStyle = lg;
+    cx.beginPath();
+    cx.arc(12, -72, 30, 0, Math.PI * 2);
+    cx.fill();
+    // Light beam cone
+    cx.save();
+    cx.globalAlpha *= 0.09;
+    const cone = cx.createLinearGradient(12, -68, 12, 30);
+    cone.addColorStop(0, 'rgba(255,240,150,1)');
+    cone.addColorStop(1, 'rgba(255,240,150,0)');
+    cx.fillStyle = cone;
+    cx.beginPath();
+    cx.moveTo(12, -68);
+    cx.lineTo(-20, 30);
+    cx.lineTo(44, 30);
+    cx.closePath();
+    cx.fill();
+    cx.restore();
+    cx.restore();
+}
+
+// ── DETAILED WALKING FIGURE ──────────────────────────────────────────────
+const STUDENT_SHIRTS = [
+    '#2563eb','#059669','#dc2626','#d97706','#0891b2','#7c3aed','#0f766e'
+];
+const TEACHER_SHIRTS = ['#3730a3','#1e3a5f','#064e3b','#4c1d95'];
+const SKIN_TONES     = ['#fbbf24','#d4916a','#c68642','#e8b89a','#a0522d'];
+
+function drawPerson(x, y, scale, type, wc, dir, alpha, shirt, skinTone) {
+    cx.save();
+    cx.globalAlpha = clamp(alpha, 0, 1);
+    cx.translate(x, y);
+    cx.scale(dir * scale, scale);
+
+    const legA = Math.sin(wc) * 32;
+    const armA = Math.sin(wc + Math.PI) * 28;
+    const bob  = Math.abs(Math.sin(wc * 2)) * 2.0;
+    const headTilt = Math.sin(wc * 0.5) * 1.5;
+
+    const SKIN  = skinTone;
+    const PANTS = type === 'teacher' ? '#1e3a5f' : '#1e293b';
+    const SHOE  = '#0f172a';
+
+    cx.translate(0, -bob);
+
+    // ── SHADOW ──
+    cx.save();
+    cx.translate(2, 86 + bob * 0.5);
+    cx.scale(1.0, 0.18);
+    const shg = cx.createRadialGradient(0, 0, 0, 0, 0, 26);
+    shg.addColorStop(0, 'rgba(0,0,0,0.38)');
+    shg.addColorStop(1, 'rgba(0,0,0,0)');
+    cx.beginPath();
+    cx.ellipse(0, 0, 26, 10, 0, 0, Math.PI * 2);
+    cx.fillStyle = shg;
+    cx.fill();
+    cx.restore();
+
+    // ── BACK LEG ──
+    _leg(cx, -5, 52, legA, PANTS, SHOE, SKIN);
+
+    // ── BODY (shirt) ──
+    // Shirt with shading
+    cx.fillStyle = shirt;
+    cx.beginPath();
+    cx.moveTo(-12, 19);
+    cx.bezierCurveTo(-15, 23, -15, 39, -13, 55);
+    cx.lineTo(13, 55);
+    cx.bezierCurveTo(15, 39, 15, 23, 12, 19);
+    cx.closePath();
+    cx.fill();
+    // Shirt highlight (3D sheen)
+    const sg = cx.createLinearGradient(-14, 19, 14, 55);
+    sg.addColorStop(0, 'rgba(255,255,255,0.13)');
+    sg.addColorStop(0.5, 'rgba(255,255,255,0)');
+    sg.addColorStop(1, 'rgba(0,0,0,0.1)');
+    cx.fillStyle = sg;
+    cx.beginPath();
+    cx.moveTo(-12, 19);
+    cx.bezierCurveTo(-15, 23, -15, 39, -13, 55);
+    cx.lineTo(13, 55);
+    cx.bezierCurveTo(15, 39, 15, 23, 12, 19);
+    cx.closePath();
+    cx.fill();
+
+    // ── ACCESSORIES ──
+    if (type === 'student') {
+        // Backpack
+        cx.fillStyle = '#1e40af';
+        cx.beginPath();
+        cx.roundRect(-22, 20, 12, 26, 3);
+        cx.fill();
+        // Backpack highlight
+        cx.fillStyle = 'rgba(255,255,255,0.08)';
+        cx.beginPath();
+        cx.roundRect(-22, 20, 6, 26, [3,0,0,3]);
+        cx.fill();
+        // Straps
+        cx.strokeStyle = '#1d4ed8';
+        cx.lineWidth = 1.5;
+        cx.beginPath();
+        cx.moveTo(-19, 22); cx.lineTo(-10, 22);
+        cx.moveTo(-19, 38); cx.lineTo(-10, 38);
+        cx.stroke();
+        // Buckle
+        cx.fillStyle = '#93c5fd';
+        cx.beginPath();
+        cx.roundRect(-17, 42, 6, 2.5, 1);
+        cx.fill();
+    } else {
+        // White dress shirt collar
+        cx.fillStyle = '#f1f5f9';
+        cx.beginPath();
+        cx.moveTo(-5, 18); cx.lineTo(0, 29); cx.lineTo(5, 18);
+        cx.closePath(); cx.fill();
+        // Tie with knot detail
+        cx.fillStyle = '#b91c1c';
+        cx.beginPath();
+        cx.moveTo(-3, 25); cx.lineTo(3, 25);
+        cx.lineTo(4, 44); cx.lineTo(0, 52); cx.lineTo(-4, 44);
+        cx.closePath(); cx.fill();
+        // Tie highlight
+        cx.fillStyle = 'rgba(255,255,255,0.15)';
+        cx.beginPath();
+        cx.moveTo(-1.5, 25); cx.lineTo(0, 25); cx.lineTo(1, 44); cx.lineTo(0, 52); cx.lineTo(-1.5, 44);
+        cx.closePath(); cx.fill();
+        // Book
+        cx.fillStyle = '#b91c1c';
+        cx.strokeStyle = '#7f1d1d';
+        cx.lineWidth = 0.6;
+        cx.beginPath();
+        cx.roundRect(-24, 28, 14, 20, 2);
+        cx.fill(); cx.stroke();
+        // Book spine
+        cx.fillStyle = '#991b1b';
+        cx.fillRect(-24, 28, 2, 20);
+        // Book lines
+        cx.strokeStyle = 'rgba(255,255,255,0.3)';
+        cx.lineWidth = 0.8;
+        cx.beginPath();
+        cx.moveTo(-21, 35); cx.lineTo(-12, 35);
+        cx.moveTo(-21, 40); cx.lineTo(-12, 40);
+        cx.moveTo(-21, 45); cx.lineTo(-12, 45);
+        cx.stroke();
+    }
+
+    // ── BACK ARM ──
+    _arm(cx, -11, 21, armA + 15, shirt, SKIN);
+
+    // ── FRONT ARM ──
+    _arm(cx, 11, 21, -armA + 15, shirt, SKIN);
+
+    // ── FRONT LEG ──
+    _leg(cx, 5, 52, -legA, PANTS, SHOE, SKIN);
+
+    // ── NECK ──
+    cx.fillStyle = SKIN;
+    cx.beginPath();
+    cx.roundRect(-3.5, 9, 7, 11, 2);
+    cx.fill();
+
+    // ── HEAD (with tilt) ──
+    cx.save();
+    cx.translate(0, 4);
+    cx.rotate(headTilt * Math.PI / 180);
+    cx.translate(0, -4);
+
+    // Head
+    cx.beginPath();
+    cx.ellipse(0, 4, 13, 14.5, 0, 0, Math.PI * 2);
+    cx.fillStyle = SKIN;
+    cx.fill();
+
+    // Skin shading
+    const hg = cx.createRadialGradient(-4, 0, 0, 0, 4, 15);
+    hg.addColorStop(0, 'rgba(255,255,255,0.15)');
+    hg.addColorStop(1, 'rgba(0,0,0,0.12)');
+    cx.fillStyle = hg;
+    cx.beginPath();
+    cx.ellipse(0, 4, 13, 14.5, 0, 0, Math.PI * 2);
+    cx.fill();
+
+    // Hair
+    const hairColor = type === 'student'
+        ? (Math.random() < 0.5 ? '#1e293b' : '#3d2314')
+        : '#4b5563';
+    cx.save();
+    cx.beginPath();
+    cx.ellipse(0, 4, 13, 14.5, 0, 0, Math.PI * 2);
+    cx.clip();
+    cx.fillStyle = hairColor;
+    cx.beginPath();
+    cx.arc(0, 4, 13.5, -Math.PI * 0.9, -Math.PI * 0.1);
+    cx.lineTo(0, -2); cx.closePath(); cx.fill();
+    if (type === 'teacher') {
+        // Gray temples
+        cx.fillStyle = '#9ca3af';
+        cx.beginPath();
+        cx.arc(-10, 5, 3.5, 0, Math.PI * 2); cx.fill();
+        cx.arc(10, 5, 3.5, 0, Math.PI * 2); cx.fill();
+    }
+    cx.restore();
+
+    // Ears
+    cx.fillStyle = SKIN;
+    cx.beginPath();
+    cx.ellipse(-13, 5, 2.5, 4, 0, 0, Math.PI * 2); cx.fill();
+    cx.beginPath();
+    cx.ellipse(13, 5, 2.5, 4, 0, 0, Math.PI * 2); cx.fill();
+
+    // Eyes
+    cx.fillStyle = '#0f172a';
+    cx.beginPath();
+    cx.ellipse(-4.5, 5, 2.2, 2.6, 0, 0, Math.PI * 2);
+    cx.ellipse( 4.5, 5, 2.2, 2.6, 0, 0, Math.PI * 2);
+    cx.fill();
+    // Eye whites highlight
+    cx.fillStyle = 'rgba(255,255,255,0.7)';
+    cx.beginPath();
+    cx.arc(-3.7, 4.2, 1.1, 0, Math.PI * 2);
+    cx.arc( 5.3, 4.2, 1.1, 0, Math.PI * 2);
+    cx.fill();
+
+    if (type === 'teacher') {
+        // Glasses
+        cx.strokeStyle = '#374151'; cx.lineWidth = 1.2;
+        cx.beginPath(); cx.arc(-4.5, 5, 4.8, 0, Math.PI * 2); cx.stroke();
+        cx.beginPath(); cx.arc( 4.5, 5, 4.8, 0, Math.PI * 2); cx.stroke();
+        cx.beginPath(); cx.moveTo(-0.3, 5); cx.lineTo(0.3, 5); cx.stroke();
+        // Glasses frames
+        cx.beginPath(); cx.moveTo(-13.5, 3); cx.lineTo(-9.3, 4); cx.stroke();
+        cx.beginPath(); cx.moveTo( 13.5, 3); cx.lineTo( 9.3, 4); cx.stroke();
+    }
+
+    // Smile
+    cx.beginPath();
+    cx.arc(0, 7, 5.5, 0.2, Math.PI - 0.2);
+    cx.strokeStyle = 'rgba(100,50,20,0.7)'; cx.lineWidth = 1.4;
+    cx.stroke();
+
+    // Eyebrows
+    cx.strokeStyle = hairColor; cx.lineWidth = 1.3;
+    cx.beginPath();
+    cx.arc(-4.5, 1.5, 3.5, -Math.PI*0.78, -Math.PI*0.22); cx.stroke();
+    cx.beginPath();
+    cx.arc( 4.5, 1.5, 3.5, -Math.PI*0.78, -Math.PI*0.22); cx.stroke();
+
+    cx.restore(); // head tilt
+    cx.restore(); // person
+}
+
+function _leg(c, bx, by, angle, color, shoeColor, skin) {
+    c.save();
+    c.translate(bx, by);
+    c.rotate(angle * Math.PI / 180);
+    c.strokeStyle = color; c.lineWidth = 6; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(0, 0); c.lineTo(0, 28); c.stroke();
+    // Knee highlight
+    c.fillStyle = 'rgba(255,255,255,0.06)';
+    c.beginPath(); c.arc(0, 8, 4, 0, Math.PI * 2); c.fill();
+    c.save();
+    c.translate(0, 28);
+    c.rotate(-angle * Math.PI / 180 * 0.4);
+    // Ankle/sock
+    c.fillStyle = 'rgba(255,255,255,0.15)';
+    c.fillRect(-3, -2, 6, 4);
+    c.fillStyle = shoeColor;
+    c.beginPath();
+    c.ellipse(5, 2, 8, 3.8, 0, 0, Math.PI * 2);
+    c.fill();
+    // Shoe highlight
+    c.fillStyle = 'rgba(255,255,255,0.1)';
+    c.beginPath();
+    c.ellipse(3, 0, 4, 1.8, -0.2, 0, Math.PI * 2);
+    c.fill();
+    c.restore();
+    c.restore();
+}
+
+function _arm(c, bx, by, angle, sleeveColor, skinColor) {
+    c.save();
+    c.translate(bx, by);
+    c.rotate(angle * Math.PI / 180);
+    c.strokeStyle = sleeveColor; c.lineWidth = 4.8; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(0, 0); c.lineTo(0, 21); c.stroke();
+    // Hand
+    c.beginPath();
+    c.arc(0, 21, 3.8, 0, Math.PI * 2);
+    c.fillStyle = skinColor; c.fill();
+    c.restore();
+}
+
+// ── SCENE OBJECTS ─────────────────────────────────────────────────────
+let stars   = [];
+let bubbles = [];
+let people  = [];
+let trees   = [];
+let lamps   = [];
+let buildingWindows = [];
+
+function buildScene() {
+    stars = [];
+    for (let i = 0; i < 80; i++) stars.push(new Star());
+
+    bubbles = [];
+    for (let i = 0; i < 40; i++) bubbles.push(new Bubble(true));
+
+    // Trees placed near sides and background
+    trees = [];
+    const treeSpots = [
+        { x:0.03, sc:0.55, d:0.6 }, { x:0.12, sc:0.45, d:0.55 },
+        { x:0.20, sc:0.62, d:0.65 }, { x:0.72, sc:0.58, d:0.62 },
+        { x:0.80, sc:0.50, d:0.58 }, { x:0.90, sc:0.65, d:0.67 },
+        { x:0.96, sc:0.42, d:0.52 },
+    ];
+    const gY = H - 14;
+    for (const t of treeSpots) {
+        trees.push({ x: W*t.x, y: gY, sc: t.sc, alpha: 0.3 + t.d*0.5 });
+    }
+
+    // Lamp posts
+    lamps = [];
+    for (let i = 0; i < 6; i++) {
+        const t = (i + 0.5) / 6;
+        const depth = 0.45 + t * 0.4;
+        lamps.push({
+            x: W * lerp(0.1, 0.9, t),
+            y: gY,
+            sc: depth * 0.7,
+            alpha: 0.2 + depth * 0.4
+        });
+    }
+
+    buildPeople();
+}
+
+function buildPeople() {
+    people = [];
+    const groundY = H - 14;
+
+    function spawnPerson(type, dir, idx) {
+        const depth  = rnd(0.45, 1.0);
+        const sc     = depth * 0.85;
+        const baseH  = 88 * sc;
+        const y      = groundY - Math.round(baseH * 0.94);
+        const shirts = type === 'student' ? STUDENT_SHIRTS : TEACHER_SHIRTS;
+        return {
+            type, dir, sc, y,
+            shirt:     shirts[idx % shirts.length],
+            skinTone:  SKIN_TONES[Math.floor(Math.random() * SKIN_TONES.length)],
+            x:         rnd(0, W),
+            speed:     rnd(0.35, 0.78) * depth,
+            wc:        rnd(0, Math.PI * 2),
+            wcSpd:     rnd(0.038, 0.068),
+            alpha:     0.38 + depth * 0.52,
+            depth,
+        };
+    }
+
+    // 7 students (5 right, 2 left)
+    for (let i = 0; i < 5; i++) people.push(spawnPerson('student',  1, i));
+    for (let i = 0; i < 2; i++) people.push(spawnPerson('student', -1, i+5));
+
+    // 6 teachers (3 each direction)
+    for (let i = 0; i < 3; i++) people.push(spawnPerson('teacher', -1, i));
+    for (let i = 0; i < 3; i++) people.push(spawnPerson('teacher',  1, i+3));
+
+    // Depth sort (smaller y = further back = drawn first)
+    people.sort((a, b) => a.depth - b.depth);
+}
+
+function rebuildScene() { buildScene(); }
+buildScene();
+
+// ── DRAW LOOP ─────────────────────────────────────────────────────────
+function drawFrame() {
+    tick++;
+    cx.clearRect(0, 0, W, H);
+
+    // ── SKY BACKGROUND ──
+    const sky = cx.createLinearGradient(0, 0, 0, H);
+    sky.addColorStop(0,    '#020818');
+    sky.addColorStop(0.28, '#031226');
+    sky.addColorStop(0.55, '#040f20');
+    sky.addColorStop(0.75, '#050c18');
+    sky.addColorStop(1,    '#030610');
+    cx.fillStyle = sky;
+    cx.fillRect(0, 0, W, H);
+
+    // Nebula-like color blobs
+    const nebula1 = cx.createRadialGradient(W*0.75, H*0.1, 0, W*0.75, H*0.1, W*0.4);
+    nebula1.addColorStop(0, 'rgba(15,30,90,0.35)');
+    nebula1.addColorStop(1, 'rgba(0,0,0,0)');
+    cx.fillStyle = nebula1; cx.fillRect(0, 0, W, H);
+
+    const nebula2 = cx.createRadialGradient(W*0.2, H*0.35, 0, W*0.2, H*0.35, W*0.35);
+    nebula2.addColorStop(0, 'rgba(10,20,65,0.25)');
+    nebula2.addColorStop(1, 'rgba(0,0,0,0)');
+    cx.fillStyle = nebula2; cx.fillRect(0, 0, W, H);
+
+    // ── STARS ──
+    for (const s of stars) { s.update(); s.draw(); }
+
+    // ── MOON ──
+    const moonX = W * 0.88, moonY = H * 0.1;
+    const moonR = 28;
+    const moonG = cx.createRadialGradient(moonX - moonR*.3, moonY - moonR*.3, 0, moonX, moonY, moonR);
+    moonG.addColorStop(0, 'rgba(255,255,220,0.92)');
+    moonG.addColorStop(0.7,'rgba(240,235,200,0.7)');
+    moonG.addColorStop(1, 'rgba(200,195,170,0.5)');
+    cx.fillStyle = moonG;
+    cx.beginPath(); cx.arc(moonX, moonY, moonR, 0, Math.PI*2); cx.fill();
+    // Moon halo
+    const halo = cx.createRadialGradient(moonX, moonY, moonR, moonX, moonY, moonR*3.5);
+    halo.addColorStop(0, 'rgba(255,255,200,0.07)');
+    halo.addColorStop(1, 'rgba(255,255,200,0)');
+    cx.fillStyle = halo;
+    cx.beginPath(); cx.arc(moonX, moonY, moonR*3.5, 0, Math.PI*2); cx.fill();
+    // Moon crater details
+    cx.fillStyle = 'rgba(180,175,150,0.25)';
+    cx.beginPath(); cx.arc(moonX+8, moonY+5, 5, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.arc(moonX-5, moonY-8, 3, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.arc(moonX+3, moonY-12, 2, 0, Math.PI*2); cx.fill();
+
+    // ── BUBBLES ──
+    for (const b of bubbles) { b.update(); b.draw(); }
+
+    // ── PERSPECTIVE GRID (floor) ──
+    cx.save();
+    cx.globalAlpha = 0.045;
+    cx.strokeStyle = '#3b82f6';
+    cx.lineWidth   = 0.8;
+    const gy = H - 14;
+    const vx = W / 2;
+    const vy = gy - H * 0.42;
+    const nLines = 32;
+    for (let i = 0; i <= nLines; i++) {
+        const t  = i / nLines;
+        const bx = (t - 0.5) * W * 2.6;
+        cx.beginPath();
+        cx.moveTo(vx, vy);
+        cx.lineTo(vx + bx, H);
+        cx.stroke();
+    }
+    for (let j = 1; j < 12; j++) {
+        const t  = j / 12;
+        const tt = t * t;
+        const yy = vy + (H - vy) * (tt * 0.88 + t * 0.12);
+        const sp = (yy - vy) / (H - vy);
+        cx.beginPath();
+        cx.moveTo(vx - sp * W * 0.92, yy);
+        cx.lineTo(vx + sp * W * 0.92, yy);
+        cx.stroke();
+    }
+    cx.restore();
+
+    // ── BUILDINGS (far background) ──
+    drawBuildings();
+
+    // ── TREES (back to front) ──
+    for (const t of trees) {
+        drawTree(t.x, t.y, t.sc * 0.7, t.alpha * 0.7);
+    }
+
+    // ── LAMP POSTS ──
+    for (const l of lamps) {
+        drawLamp(l.x, l.y, l.sc, l.alpha);
+    }
+
+    // ── GROUND FILL ──
+    const groundFill = cx.createLinearGradient(0, gy - 2, 0, H);
+    groundFill.addColorStop(0, 'rgba(5,12,30,0.9)');
+    groundFill.addColorStop(1, 'rgba(3,6,14,0.98)');
+    cx.fillStyle = groundFill;
+    cx.fillRect(0, gy - 2, W, H - gy + 2);
+
+    // ── GROUND GLOW LINE ──
+    cx.save();
+    cx.globalAlpha = 0.28;
+    const lineG = cx.createLinearGradient(0, 0, W, 0);
+    lineG.addColorStop(0,    'rgba(0,0,0,0)');
+    lineG.addColorStop(0.1,  '#1d4ed8');
+    lineG.addColorStop(0.5,  '#60a5fa');
+    lineG.addColorStop(0.9,  '#1d4ed8');
+    lineG.addColorStop(1,    'rgba(0,0,0,0)');
+    cx.strokeStyle = lineG;
+    cx.lineWidth = 2;
+    cx.beginPath(); cx.moveTo(0, gy); cx.lineTo(W, gy); cx.stroke();
+    // Reflection below
+    cx.globalAlpha = 0.06;
+    cx.strokeStyle = '#60a5fa';
+    cx.lineWidth = 1;
+    cx.beginPath(); cx.moveTo(0, gy+3); cx.lineTo(W, gy+3); cx.stroke();
+    cx.restore();
+
+    // ── GROUND FADE ──
+    const gGrad = cx.createLinearGradient(0, H - 80, 0, H);
+    gGrad.addColorStop(0,   'rgba(0,0,0,0)');
+    gGrad.addColorStop(0.4, 'rgba(3,6,16,0.75)');
+    gGrad.addColorStop(1,   'rgba(3,6,14,0.98)');
+    cx.fillStyle = gGrad;
+    cx.fillRect(0, H - 80, W, 80);
+
+    // ── WALKING PEOPLE (depth-sorted) ──
+    for (const p of people) {
+        p.wc += p.wcSpd;
+        p.x  += p.speed * p.dir;
+        const margin = 150;
+        if      (p.dir ===  1 && p.x >  W + margin) p.x = -margin;
+        else if (p.dir === -1 && p.x < -margin)      p.x =  W + margin;
+        drawPerson(p.x, p.y, p.sc, p.type, p.wc, p.dir, p.alpha, p.shirt, p.skinTone);
+    }
+
+    // ── TOP VIGNETTE ──
+    const topFade = cx.createLinearGradient(0, 0, 0, H * 0.18);
+    topFade.addColorStop(0, 'rgba(2,8,24,0.8)');
+    topFade.addColorStop(1, 'rgba(0,0,0,0)');
+    cx.fillStyle = topFade;
+    cx.fillRect(0, 0, W, H * 0.18);
+
+    requestAnimationFrame(drawFrame);
+}
+
+drawFrame();
+
+// ════════════════════════════════════════════════════════════════════════
+//  LOGIN LOGIC
+// ════════════════════════════════════════════════════════════════════════
+const CREDS = [
+    { email: 'admin@sistema.edu', password: 'admin123' },
+    { email: 'admin@colegio.edu', password: 'admin123' },
+];
+
+async function doLogin(e) {
+    e.preventDefault();
+    hideErr();
+    const email = document.getElementById('email').value.trim();
+    const pass  = document.getElementById('password').value;
+    const rem   = document.getElementById('rem').checked;
+    setLoad(true);
+
+    try {
+        const res = await fetch('http://localhost:3001/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password: pass })
+        });
+
+        if (res.ok) {
+            const user = await res.json();
+            if (rem) localStorage.setItem('isLoggedIn', 'true');
+            sessionStorage.setItem('isLoggedIn', 'true');
+            sessionStorage.setItem('adminUser', JSON.stringify(user));
+            window.location.href = 'index.html';
+            return;
+        }
+    } catch (err) {
+        console.warn('Backend no disponible para login web:', err);
+    }
+
+    if (CREDS.some(c => c.email === email && c.password === pass)) {
+        if (rem) localStorage.setItem('isLoggedIn', 'true');
+        sessionStorage.setItem('isLoggedIn', 'true');
+        window.location.href = 'index.html';
+    } else {
+        setLoad(false);
+        showErr('Credenciales incorrectas. Verifica e intenta de nuevo.');
+    }
+}
+
+function quickAccess() {
+    document.getElementById('email').value    = 'admin@sistema.edu';
+    document.getElementById('password').value = 'admin123';
+    hideErr();
+    setTimeout(() => document.getElementById('loginForm').dispatchEvent(
+        new Event('submit', { cancelable: true })
+    ), 260);
+}
+
+function togglePass() {
+    const inp = document.getElementById('password');
+    const isP = inp.type === 'password';
+    inp.type = isP ? 'text' : 'password';
+    document.getElementById('eOff').style.display = isP ? 'none' : '';
+    document.getElementById('eOn').style.display  = isP ? ''     : 'none';
+}
+
+function setLoad(on) {
+    document.getElementById('subBtn').disabled      = on;
+    document.getElementById('sp').style.display     = on ? 'block' : 'none';
+    document.getElementById('subIco').style.display = on ? 'none'  : '';
+    document.getElementById('subTxt').textContent   = on ? 'Verificando...' : 'Iniciar sesión';
+}
+
+function showErr(msg) {
+    document.getElementById('errMsg').textContent = msg;
+    document.getElementById('err').classList.add('show');
+}
+function hideErr() { document.getElementById('err').classList.remove('show'); }
+
+// ── Polyfill roundRect for older browsers ──
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+        r = typeof r === 'number' ? r : (Array.isArray(r) ? r[0] : 0);
+        this.beginPath();
+        this.moveTo(x + r, y);
+        this.lineTo(x + w - r, y);
+        this.quadraticCurveTo(x + w, y, x + w, y + r);
+        this.lineTo(x + w, y + h - r);
+        this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        this.lineTo(x + r, y + h);
+        this.quadraticCurveTo(x, y + h, x, y + h - r);
+        this.lineTo(x, y + r);
+        this.quadraticCurveTo(x, y, x + r, y);
+        this.closePath();
+    };
+}
+
+console.log('✨ Enhanced 3D Login Scene loaded — Colegio Germán Busch');
+</script>
+</body>
+</html>
