@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Configuración del backend — edita config.js para cambiar la URL del servidor -->
+    <script src="config.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         a { text-decoration: none; color: inherit; }
@@ -981,7 +983,7 @@ async function doLogin(e) {
     setLoad(true);
 
     try {
-        const res = await fetch('http://localhost:3001/api/auth/login', {
+        const res = await fetch((window.BACKEND_URL || 'http://localhost:3001') + '/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password: pass })

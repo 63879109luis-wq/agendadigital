@@ -28,23 +28,15 @@ import 'package:flutter/foundation.dart';         // kIsWeb (detectar si es web)
 /// Servicio de API que gestiona toda la comunicación HTTP de la app.
 /// Se instancia normalmente: final api = ApiService();
 class ApiService {
-  // ── URLs base por plataforma ────────────────────────────────
-  // En Android el emulador usa 10.0.2.2 para referirse al localhost del PC.
-  // En Web e iOS se usa 127.0.0.1 directamente.
+  // ── URLs base ────────────────────────────────────────────────
+  // URL del servidor de producción. Cambia esta IP/dominio si el servidor cambia.
+  static const String _serverHost = 'germanbusch.shop'; // ✅ Dominio GoDaddy
 
-  /// URL base del backend Node.js (Express) en puerto 3001
-  static String get baseUrl {
-    if (kIsWeb) return 'http://127.0.0.1:3001/api';           // Navegador web
-    if (Platform.isAndroid) return 'http://10.0.2.2:3001/api'; // Emulador Android
-    return 'http://127.0.0.1:3001/api';                        // iOS / Desktop
-  }
+  /// URL base del backend Node.js (Express) — proxy Nginx en /api
+  static String get baseUrl => 'http://$_serverHost/api';
 
-  /// URL base del servicio Python OCR en puerto 8000
-  static String get ocrUrl {
-    if (kIsWeb) return 'http://127.0.0.1:8000';
-    if (Platform.isAndroid) return 'http://10.0.2.2:8000';
-    return 'http://127.0.0.1:8000';
-  }
+  /// URL base del servicio Python OCR — proxy Nginx en /ocr
+  static String get ocrUrl => 'http://$_serverHost/ocr';
 
   // ── Helper: encabezados para peticiones JSON ────────────────
   /// Headers estándar para peticiones con cuerpo JSON

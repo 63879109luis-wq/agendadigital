@@ -243,34 +243,13 @@ function initCardAnimations() {
 //  MÓDULOS CRUD — Motor genérico de datos
 // ═══════════════════════════════════════════════════
 
-/* ── Datos iniciales de cada módulo ── */
+/* ── Datos de cada módulo — se cargan desde MongoDB al iniciar ── */
 const DB = {
-    admins: [
-        { id: 1, nombre: 'Juan Carlos Flores', email: 'jflores@colegio.edu', ci: '7654321', telefono: '+591 70001111', estado: 'Activo', obs: 'Administrador principal', fecha: '22/06/2026' },
-        { id: 2, nombre: 'María Quispe', email: 'mquispe@colegio.edu', ci: '8123456', telefono: '+591 70002222', estado: 'Activo', obs: '', fecha: '10/07/2026' },
-    ],
-    docentes: [
-        { id: 1, nombre: 'Prof. Carlos Ruiz', email: 'cruiz@colegio.edu', ci: '5678901', telefono: '+591 71001001', especialidad: 'Matemáticas', materias: 'Matemáticas I, Álgebra', estado: 'Activo', obs: '' },
-        { id: 2, nombre: 'Prof. Ana López', email: 'alopez@colegio.edu', ci: '6789012', telefono: '+591 71002002', especialidad: 'Lenguaje', materias: 'Lenguaje y Literatura', estado: 'Activo', obs: '' },
-        { id: 3, nombre: 'Prof. Miguel Torres', email: 'mtorres@colegio.edu', ci: '7890123', telefono: '+591 71003003', especialidad: 'Informática', materias: 'Programación I, Redes', estado: 'Activo', obs: '' },
-    ],
-    estudiantes: [
-        { id: 1, nombre: 'Camila Mamani', ci: '11223344', semestre: '3.° Secundaria', email: 'cmamani@est.edu', telefono: '+591 72001001', tutor: 'Rosa Mamani', tutorTel: '+591 72009001', estado: 'Activo', direccion: 'Av. 6 de Agosto', nacimiento: '2005-03-12', obs: '' },
-        { id: 2, nombre: 'Luis Condori', ci: '22334455', semestre: '2.° Secundaria', email: 'lcondori@est.edu', telefono: '+591 72002002', tutor: 'Pedro Condori', tutorTel: '+591 72009002', estado: 'Activo', direccion: 'Calle Lanza 23', nacimiento: '2006-07-22', obs: '' },
-        { id: 3, nombre: 'Sofía Quisbert', ci: '33445566', semestre: '5.° Secundaria', email: 'squisbert@est.edu', telefono: '+591 72003003', tutor: 'Elena Quisbert', tutorTel: '+591 72009003', estado: 'Activo', direccion: 'Villa Copacabana', nacimiento: '2003-11-05', obs: '' },
-        { id: 4, nombre: 'Diego Ticona', ci: '44556677', semestre: '1.° Secundaria', email: 'dticona@est.edu', telefono: '+591 72004004', tutor: 'Juana Ticona', tutorTel: '+591 72009004', estado: 'Activo', direccion: 'El Alto Z.11', nacimiento: '2007-01-30', obs: '' },
-    ],
-    materias: [
-        { id: 1, nombre: 'Matemáticas I', semestre: '1.° Secundaria', docente: 'Prof. Carlos Ruiz', estudiantes: '30', horas: '4', aula: 'Aula 101', desc: 'Aritmética y álgebra básica.' },
-        { id: 2, nombre: 'Lenguaje y Literatura', semestre: '1.° Secundaria', docente: 'Prof. Ana López', estudiantes: '28', horas: '3', aula: 'Aula 102', desc: 'Comprensión lectora y redacción.' },
-        { id: 3, nombre: 'Programación I', semestre: '3.° Secundaria', docente: 'Prof. Miguel Torres', estudiantes: '25', horas: '5', aula: 'Lab. Inf.', desc: 'Fundamentos de programación.' },
-        { id: 4, nombre: 'Redes de Computadoras', semestre: '5.° Secundaria', docente: 'Prof. Miguel Torres', estudiantes: '22', horas: '4', aula: 'Lab. Redes', desc: 'Protocolos y topologías de red.' },
-    ],
-    actividades: [
-        { id: 1, nombre: 'Examen Parcial 1', tipo: 'Examen', materia: 'Matemáticas I', docente: 'Prof. Carlos Ruiz', fecha: '2026-07-15', puntos: '100', estado: 'Cerrada', semestre: '1.° Semestre', desc: 'Examen de aritmética básica.' },
-        { id: 2, nombre: 'Tarea: CSS Grid', tipo: 'Tarea', materia: 'Programación I', docente: 'Prof. Miguel Torres', fecha: '2026-07-22', puntos: '50', estado: 'Activa', semestre: '3.° Semestre', desc: 'Implementar layout con CSS Grid.' },
-        { id: 3, nombre: 'Proyecto Final', tipo: 'Proyecto', materia: 'Redes de Computadoras', docente: 'Prof. Miguel Torres', fecha: '2026-08-10', puntos: '200', estado: 'Pendiente', semestre: '5.° Semestre', desc: 'Diseño de topología de red.' },
-    ],
+    admins:      [], // Cargado desde MongoDB via /api/admin/users?role=admin
+    docentes:    [], // Cargado desde MongoDB via /api/admin/users?role=teacher
+    estudiantes: [], // Cargado desde MongoDB via /api/admin/users?role=student
+    materias:    [], // Cargado desde MongoDB via /api/materias
+    actividades: [], // Cargado desde MongoDB via /api/actividades
 };
 
 let editandoId = {}; // {admins: null, docentes: null, ...}
@@ -396,14 +375,20 @@ const MOD_CFG = {
 };
 
 /* ── Backend Connection (Node.js API) ── */
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = (window.BACKEND_URL || 'http://localhost:3001') + '/api';
 
 async function cargarUsuariosDesdeBackend() {
+    // Mostrar indicador de carga en las tablas
+    ['admins', 'docentes', 'estudiantes'].forEach(mod => {
+        const tbody = document.getElementById(`tbody-${mod}`);
+        if (tbody) tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--text-muted)"><span style="opacity:.6">⏳ Conectando a la base de datos...</span></td></tr>`;
+    });
+
     try {
-        const res = await fetch(`${API_BASE}/admin/users`);
-        if (!res.ok) return;
+        const res = await fetch(`${API_BASE}/admin/users`, { signal: AbortSignal.timeout(8000) });
+        if (!res.ok) throw new Error(`Error del servidor: ${res.status}`);
         const users = await res.json();
-        
+
         const ests = [];
         const docs = [];
         const adms = [];
@@ -421,6 +406,7 @@ async function cargarUsuariosDesdeBackend() {
                     tutorTel: u.tutorTel || '',
                     estado: 'Activo',
                     direccion: u.direccion || '',
+                    nacimiento: u.nacimiento || '',
                     obs: ''
                 });
             } else if (u.role === 'teacher') {
@@ -449,21 +435,35 @@ async function cargarUsuariosDesdeBackend() {
             }
         });
 
-        if (ests.length > 0) DB.estudiantes = ests;
-        if (docs.length > 0) DB.docentes = docs;
-        if (adms.length > 0) DB.admins = adms;
+        // ⚠️ SIEMPRE sobreescribir el DB con los datos reales de MongoDB
+        // (aunque vengan vacíos) — nunca mostrar datos falsos hardcodeados
+        DB.estudiantes = ests;
+        DB.docentes    = docs;
+        DB.admins      = adms;
 
         renderTabla('estudiantes');
         renderTabla('docentes');
         renderTabla('admins');
-        
+
         const elEst = document.getElementById('stat-estudiantes');
-        if (elEst && ests.length > 0) elEst.textContent = ests.length;
+        if (elEst) elEst.textContent = ests.length;
         const elDoc = document.getElementById('stat-docentes');
-        if (elDoc && docs.length > 0) elDoc.textContent = docs.length;
+        if (elDoc) elDoc.textContent = docs.length;
+
+        console.log(`✅ Base de datos cargada: ${adms.length} admins, ${docs.length} docentes, ${ests.length} estudiantes`);
+
     } catch (err) {
-        // Backend no disponible — el panel sigue funcionando en modo local
-        console.info('ℹ️ Backend no disponible, usando datos locales:', err.message);
+        console.error('❌ No se pudo conectar al backend:', err.message);
+        // Mostrar error visible en las tablas (NO datos falsos)
+        ['admins', 'docentes', 'estudiantes'].forEach(mod => {
+            DB[mod] = []; // Vaciar para no mostrar datos falsos
+            const tbody = document.getElementById(`tbody-${mod}`);
+            if (tbody) tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:30px">
+                <div style="color:#ef4444;margin-bottom:8px">⚠️ No se pudo conectar al servidor</div>
+                <div style="color:var(--text-muted);font-size:12px">Asegúrate de que el backend esté corriendo en: <code style="color:#f59e0b">${API_BASE}</code></div>
+                <button onclick="cargarUsuariosDesdeBackend()" style="margin-top:12px;padding:6px 16px;background:#3b82f6;color:white;border:none;border-radius:6px;cursor:pointer">🔄 Reintentar</button>
+            </td></tr>`;
+        });
     }
 }
 
